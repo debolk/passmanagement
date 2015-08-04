@@ -27,6 +27,11 @@ $(document).ready(function(){
         type: 'GET',
         dataType: 'json',
         success: function(passes) {
+            // Sort by name
+            passes.sort(function(a,b){
+                return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+            });
+            // Add to UI
             $(passes).each(function(){
                 $('#passes tbody').append(template_row(this));
             });
