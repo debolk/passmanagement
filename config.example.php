@@ -4,6 +4,13 @@ $config = [
     'ldap' => [
         'host'     => '',
         'username' => '',
-        'password' => ''
+        'password' => '',
+        'base_dn'  => ''
+    ],
+    'oauth' => [
+        'client_id'     => '',
+        'client_secret' => '',
+        'callback'      => '',
+        'resource'      => ''
     ]
 ];
