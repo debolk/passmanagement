@@ -65,9 +65,8 @@ $app->post('/users/:uid', function($uid) use ($app, $ldap) {
 
 // Deny a user access to the door
 $app->delete('/users/:uid', function($uid) use ($app, $ldap) {
-    echo $ldap->denyAccess($uid);
-    die;
-    // $app->response->setStatus(204); // HTTP 204 No Content
+    $ldap->denyAccess($uid);
+    $app->response->setStatus(204); // HTTP 204 No Content
 });
 
 // Add a pass to a user
