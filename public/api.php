@@ -6,8 +6,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Start Slim
-require 'vendor/autoload.php';
+// Setup
+require '../vendor/autoload.php';
+require '../config.php';
 $app = new \Slim\Slim();
 
 // JSON-encoded data of all current members with passes

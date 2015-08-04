@@ -20,7 +20,7 @@ $(document).ready(function(){
 
     // Load all passes
     $.ajax({
-        url: '/passes',
+        url: '/users',
         type: 'GET',
         dataType: 'json',
         success: function(passes) {
