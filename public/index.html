@@ -20,8 +20,10 @@
     <table id="passes">
         <thead>
             <tr>
+                <th>Gebruikersnaam</th>
                 <th>Naam</th>
-                <th>Pas verwijderen</th>
+                <th>Heeft pas</th>
+                <th>Krijgt toegang</th>
             </tr>
         </thead>
         <tbody>
@@ -47,5 +49,25 @@
         </p>
     </form>
 
+    <script type="text/x-handlebars" id="row">
+        <tr>
+            <td>{{ uid }}</td>
+            <td>{{ name }}</td>
+            <td>
+                {{#if pass}}
+                    <a href="#" class="status yes">&check; heeft pas</a>
+                {{else}}
+                    <a href="#" class="status no">&cross; geen pas</a>
+                {{/if}}
+            </td>
+            <td>
+                {{#if access}}
+                    <a href="#" class="status yes">&check; krijgt toegang</a>
+                {{else}}
+                    <a href="#" class="status no">&cross; geen toegang</a>
+                {{/if}}
+            </td>
+        </tr>
+    </script>
 </body>
 </html>

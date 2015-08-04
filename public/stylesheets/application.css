@@ -1,6 +1,7 @@
 body {
     font-family: Garamond, sans-serif;
     max-width: 52em;
+    font-size: large;
 }
 
 #error {
@@ -11,4 +12,26 @@ body {
     margin-bottom: 1em;
     font-weight: bold;
     border-radius: 1em;
+}
+
+.status {
+    color: white;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 0.1em 1em;
+    text-decoration: none;
+}
+
+.status.yes {
+    background-color: green;
+}
+
+.status.no {
+    background-color: red;
+}
+
+
+th {
+    text-align: left;
 }

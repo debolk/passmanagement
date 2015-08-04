@@ -18,15 +18,17 @@ $(document).ready(function(){
         $('#error').html('').hide();
     };
 
+    // Compile template
+    var template_row = Handlebars.compile($("#row").html());
+
     // Load all passes
     $.ajax({
         url: '/users',
         type: 'GET',
         dataType: 'json',
         success: function(passes) {
-            $(passes).each(function(pass){
-                var row = $('<tr><td>'+pass.name+'</td><td>'+pass.id+'</td></tr>');
-                row.appendTo('#passes tbody');
+            $(passes).each(function(){
+                $('#passes tbody').append(template_row(this));
             });
         },
         error: showError
