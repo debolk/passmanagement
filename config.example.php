@@ -8,9 +8,7 @@ $config = [
         'base_dn'  => ''
     ],
     'oauth' => [
-        'client_id'     => '',
-        'client_secret' => '',
-        'callback'      => '',
-        'resource'      => ''
+        'authorisation_server' => '',
+        'resource'             => ''
     ]
 ];

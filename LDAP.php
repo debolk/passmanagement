@@ -59,8 +59,6 @@ class LDAP
             $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn']);
             $owner = ldap_get_entries($this->ldap, $owner_ldap);
 
-            // var_dump($owner);
-
             // Construct result
             return [
                 'uid'    => $owner[0]['uid'][0],

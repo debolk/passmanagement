@@ -1,13 +1,65 @@
 $(document).ready(function(){
 
     /**
+     * Initialise application when OAuth authentication is done
+     * @param  {String} access_token valid OAuth2 access token
+     * @return {undefined}
+     */
+    var initApplication = function(access_token) {
+
+        // Check for authorisation
+        if (! access_token) {
+            showError('Geen toegang: je bent uitgelogd of je bent geen bestuur.<br> Herlaad de pagina om opnieuw te proberen.');
+            return;
+        }
+        else {
+            hideError();
+        }
+
+        // Store access token
+        window.access_token = access_token;
+
+        // Compile template
+        var template_row = Handlebars.compile($("#row").html());
+
+        // Load all passes
+        $.ajax({
+            url: '/users?access_token='+window.access_token,
+            type: 'GET',
+            dataType: 'json',
+            success: function(passes) {
+                // Sort by name
+                passes.sort(function(a,b){
+                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                });
+                // Add to UI
+                $(passes).each(function(){
+                    $('#passes tbody').append(template_row(this));
+                });
+                $('#spinner').remove();
+            },
+            error: function(error) {
+                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+            }
+        });
+
+        // Event handlers
+        $('#passes').on('click', '.status.access', changeAccess);
+        $('#passes').on('click', '.status.pass', changePass);
+    }
+
+    /**
      * Show an error message
      * @param  {Error} XMLHttpRequest error object
      * @return {undefined}
      */
-    var showError = function(error) {
-        console.log(Error(error));
-        $('#error').html('Fatale fout bij communiceren met server.<br><br>Technische details: '+error.status+' '+error.responseURL).show();
+    var showError = function(message, technical) {
+        if (technical === undefined) {
+            $('#error').html(message).show();
+        }
+        else {
+            $('#error').html(message+'<br><br>Technische details: '+technical).show();
+        }
     };
 
     /**
@@ -34,10 +86,12 @@ $(document).ready(function(){
 
             // Send call
             $.ajax({
-                url: '/users/'+$(this).attr('data-uid'),
+                url: '/users/'+$(this).attr('data-uid')+'?access_token='+window.access_token,
                 type: 'DELETE',
                 dataType: 'json',
-                error: showError
+                error: function(error) {
+                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+                }
             });
         }
         else {
@@ -47,10 +101,12 @@ $(document).ready(function(){
 
             // Send call
             $.ajax({
-                url: '/users/'+$(this).attr('data-uid'),
+                url: '/users/'+$(this).attr('data-uid')+'?access_token='+window.access_token,
                 type: 'POST',
                 dataType: 'json',
-                error: showError
+                error: function(error) {
+                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+                }
             });
         }
     }
@@ -71,10 +127,12 @@ $(document).ready(function(){
 
             // Send call
             $.ajax({
-                url: '/users/'+$(this).attr('data-uid')+'/pass',
+                url: '/users/'+$(this).attr('data-uid')+'/pass?access_token='+window.access_token,
                 type: 'DELETE',
                 dataType: 'json',
-                error: showError
+                error: function(error) {
+                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+                }
             });
         }
         else {
@@ -84,38 +142,17 @@ $(document).ready(function(){
 
             // Send call
             $.ajax({
-                url: '/users/'+$(this).attr('data-uid')+'/pass',
+                url: '/users/'+$(this).attr('data-uid')+'/pass?access_token='+window.access_token,
                 type: 'POST',
                 dataType: 'json',
-                error: showError
+                error: function(error) {
+                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+                }
             });
         }
     }
 
-    // Compile template
-    var template_row = Handlebars.compile($("#row").html());
-
-    // Load all passes
-    $.ajax({
-        url: '/users',
-        type: 'GET',
-        dataType: 'json',
-        success: function(passes) {
-            // Sort by name
-            passes.sort(function(a,b){
-                return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-            });
-            // Add to UI
-            $(passes).each(function(){
-                $('#passes tbody').append(template_row(this));
-            });
-            $('#spinner').remove();
-        },
-        error: showError
-    });
-
-    // Event handler:
-    $('#passes').on('click', '.status.access', changeAccess);
-    $('#passes').on('click', '.status.pass', changePass);
+    // Start by authenticating to OAuth
+    var oauth = new OAuth(config);
+    oauth.authenticate(initApplication);
 });
-
