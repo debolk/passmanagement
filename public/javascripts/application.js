@@ -35,6 +35,7 @@ $(document).ready(function(){
             $(passes).each(function(){
                 $('#passes tbody').append(template_row(this));
             });
+            $('#spinner').remove();
         },
         error: showError
     });

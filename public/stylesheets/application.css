@@ -35,3 +35,7 @@ body {
 th {
     text-align: left;
 }
+
+#spinner img {
+    vertical-align: middle;
+}
