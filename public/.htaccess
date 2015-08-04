@@ -1,0 +1,4 @@
+# Rewrite everything that is not a regular file to the API
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ ../index.php/$1
