@@ -53,16 +53,16 @@
             <td>{{ name }}</td>
             <td>
                 {{#if pass}}
-                    <a href="#" data-uid="{{uid}}" class="status yes">&check; heeft pas</a>
+                    <a href="#" data-uid="{{uid}}" class="status pass yes">&check; heeft pas</a>
                 {{else}}
-                    <a href="#" data-uid="{{uid}}" class="status no">&cross; geen pas</a>
+                    <a href="#" data-uid="{{uid}}" class="status pass no">&cross; geen pas</a>
                 {{/if}}
             </td>
             <td>
                 {{#if access}}
-                    <a href="#" data-uid="{{uid}}" class="status yes">&check; krijgt toegang</a>
+                    <a href="#" data-uid="{{uid}}" class="status access yes">&check; krijgt toegang</a>
                 {{else}}
-                    <a href="#" data-uid="{{uid}}" class="status no">&cross; geen toegang</a>
+                    <a href="#" data-uid="{{uid}}" class="status access no">&cross; geen toegang</a>
                 {{/if}}
             </td>
         </tr>

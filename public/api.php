@@ -33,23 +33,28 @@ $app->get('/users', function() use ($ldap) {
 });
 
 // Grant a user access to the door
-$app->post('/users/{uid}', function(){
-
+$app->post('/users/:uid', function($uid) use ($app, $ldap) {
+    $ldap->grantAccess($uid);
+    $app->response->setStatus(204); // HTTP 204 No Content
 });
 
 // Deny a user access to the door
-$app->delete('/users/{uid}', function(){
-
+$app->delete('/users/:uid', function($uid) use ($app, $ldap) {
+    echo $ldap->denyAccess($uid);
+    die;
+    // $app->response->setStatus(204); // HTTP 204 No Content
 });
 
 // Add a pass to a user
-$app->post('/users/{uid}/pass', function(){
-
+$app->post('/users/:uid/pass', function($uid) use ($app, $ldap) {
+    $ldap->addPass($uid);
+    $app->response->setStatus(204); // HTTP 204 No Content
 });
 
 // Remove the pass of a user
-$app->delete('/users/{uid}/pass', function(){
-
+$app->delete('/users/:uid/pass', function($uid) use ($app, $ldap) {
+    $ldap->removePass($uid);
+    $app->response->setStatus(204); // HTTP 204 No Content
 });
 
 // Run the application

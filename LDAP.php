@@ -45,7 +45,7 @@ class LDAP
     public function getAllUsers()
     {
         // Find all cards
-        $search = ldap_search($this->ldap, 'dc=bolkhuis,dc=nl', '(&(objectClass=device)(cn=ovchipkaart))', ['dn']);
+        $search = ldap_search($this->ldap, $this->config['base_dn'], '(&(objectClass=device)(cn=ovchipkaart))', ['dn']);
         $cards = ldap_get_entries($this->ldap, $search);
 
         // Strip off initial 'count' entry
@@ -69,5 +69,71 @@ class LDAP
                 'access' => in_array('gosaIntranetAccount', $owner[0]['objectclass'])
             ];
         }, $cards);
+    }
+
+    /**
+     * Add the access flag to a user
+     * @param  string $uid the user ID to update
+     * @return void
+     */
+    public function grantAccess($uid)
+    {
+        // Find the user
+        $user = $this->findUser($uid);
+
+        // Determine if we need to update
+        if (in_array('gosaIntranetAccount', $user['objectclass'])) {
+            return;
+        }
+
+        // Add flag to user
+        $patch = ['objectclass' => ['gosaIntranetAccount']];
+        ldap_mod_add($this->ldap, $user['dn'], $patch);
+
+    }
+
+    /**
+     * Remove the access flag of a user
+     * @param  string $uid user ID to update
+     * @return void
+     */
+    public function denyAccess($uid)
+    {
+        // Find the user
+        $user = $this->findUser($uid);
+
+        // Determine if we need to update
+        if (! in_array('gosaIntranetAccount', $user['objectclass'])) {
+            return;
+        }
+
+        // Remove flag from user
+        $patch = ['objectclass' => ['gosaIntranetAccount']];
+        ldap_mod_del($this->ldap, $user['dn'], $patch);
+    }
+
+    public function addPass($uid, $pass)
+    {
+
+    }
+
+    public function removePass($uid)
+    {
+
+    }
+
+    /**
+     * Find a LDAP user by its uid
+     * @param  string    $uid the user id to find
+     * @return array          details of the user
+     * @throws Exception      when user does not exist
+     */
+    private function findUser($uid)
+    {
+        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['gosaIntranetAccount']);
+        if (ldap_count_entries($this->ldap, $search) !== 1) {
+            throw new Exception('User does not exist');
+        }
+        return ldap_get_entries($this->ldap, $search)[0];
     }
 }

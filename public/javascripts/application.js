@@ -18,6 +18,80 @@ $(document).ready(function(){
         $('#error').html('').hide();
     };
 
+    /**
+     * Change the access grant of a user
+     * @param  {Event} event click event of the link
+     * @return {undefined}
+     */
+    var changeAccess = function(event) {
+        event.preventDefault();
+
+        // Determine whether to grant or deny
+        if ($(this).hasClass('yes')) {
+
+            // Optimistic interface update
+            $(this).removeClass('yes').addClass('no').html('&cross; geen toegang');
+
+            // Send call
+            $.ajax({
+                url: '/users/'+$(this).attr('data-uid'),
+                type: 'DELETE',
+                dataType: 'json',
+                error: showError
+            });
+        }
+        else {
+
+            // Optimistic interface update
+            $(this).removeClass('no').addClass('yes').html('&check; krijgt toegang');
+
+            // Send call
+            $.ajax({
+                url: '/users/'+$(this).attr('data-uid'),
+                type: 'POST',
+                dataType: 'json',
+                error: showError
+            });
+        }
+    }
+
+    /**
+     * Add or remove the pass of a users
+     * @param  {Event} event click event of the link
+     * @return {undefined}
+     */
+    var changePass = function(event) {
+        event.preventDefault();
+
+        // Determine whether to grant or deny
+        if ($(this).hasClass('yes')) {
+
+            // Optimistic interface update
+            $(this).removeClass('yes').addClass('no').html('&cross; geen pas');
+
+            // Send call
+            $.ajax({
+                url: '/users/'+$(this).attr('data-uid')+'/pass',
+                type: 'DELETE',
+                dataType: 'json',
+                error: showError
+            });
+        }
+        else {
+
+            // Optimistic interface update
+            $(this).removeClass('no').addClass('yes').html('&check; heeft pas');
+
+            // Send call
+            $.ajax({
+                url: '/users/'+$(this).attr('data-uid')+'/pass',
+                type: 'POST',
+                dataType: 'json',
+                error: showError
+            });
+        }
+    }
+
     // Compile template
     var template_row = Handlebars.compile($("#row").html());
 
@@ -39,4 +113,9 @@ $(document).ready(function(){
         },
         error: showError
     });
+
+    // Event handler:
+    $('#passes').on('click', '.status.access', changeAccess);
+    $('#passes').on('click', '.status.pass', changePass);
 });
+
