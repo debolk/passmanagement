@@ -1,0 +1,51 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Pasbeheer</title>
+
+    <link rel="stylesheet" href="stylesheets/application.css">
+    <script src="bower_components/zepto/zepto.min.js"></script>
+    <script src="bower_components/handlebars/handlebars.min.js"></script>
+    <script src="javascripts/application.js"></script>
+</head>
+<body>
+    <h1>Pasbeheer</h1>
+    <p>
+        Beheert de passen voor de voordeur.
+    </p>
+
+    <div id="error"></div>
+
+    <h2>Bestaande passen</h2>
+    <table id="passes">
+        <thead>
+            <tr>
+                <th>Naam</th>
+                <th>Pas verwijderen</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <h2>Nieuwe pas instellen</h2>
+    <p>
+        Laat het lid zijn of haar pas tweemaal voor de scanner houden. Pasbeheer haalt automatisch de laatste twee gescande passen op uit de database, en voegt het pasnummer hier toe. Als de laatste twee pasnummer niet hetzelfde zijn, kun je de pas niet instellen.
+    </p>
+    <form action="/aanmaken">
+        <p>
+            <label for="user_id">Lid</label>
+            <select name="user_id" id="user_id"></select>
+        </p>
+        <p>
+            <label for="pass_id">Pas</label>
+            <input type="text" name="pass_id" id="pass_id" disabled>
+        </p>
+        <p>
+            <input type="submit" name="" value="Pas instellen">
+        </p>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+body {
+    font-family: Garamond, sans-serif;
+    max-width: 52em;
+}
+
+#error {
+    display: none;
+    background-color: #e66;
+    color: white;
+    padding: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    border-radius: 1em;
+}

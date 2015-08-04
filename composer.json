@@ -1,0 +1,12 @@
+{
+    "name": "jakobbuis/passmanagement",
+    "authors": [
+        {
+            "name": "Jakob Buis",
+            "email": "jakob@cubiso.nl"
+        }
+    ],
+    "require": {
+        "slim/slim": "^2.6"
+    }
+}
