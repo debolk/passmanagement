@@ -220,13 +220,20 @@ $(document).ready(function(){
 
         event.preventDefault();
 
-        // get user id
-        // send call
-            // if success
-                // show notification
-                // add entry
-            // if error
-                // show error
+        // Send call
+        $.ajax({
+            url: '/users/'+$('#user_id').val()+'/pass?access_token='+window.access_token,
+            type: 'POST',
+            dataType: 'html',
+            success: function() {
+                //FIXME add pass to interface
+                $('#pass_result').html('');
+            },
+            error: function(error) {
+                //FIXME show error on double-adding passes
+                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+            }
+        });
     };
 
     // Start by authenticating to OAuth
