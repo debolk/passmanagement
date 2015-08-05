@@ -1,6 +1,6 @@
 body {
     font-family: Garamond, sans-serif;
-    max-width: 52em;
+    max-width: 45em;
     font-size: large;
 }
 
@@ -22,6 +22,10 @@ body {
     text-decoration: none;
 }
 
+#passes {
+    white-space: nowrap;
+}
+
 .status.yes {
     background-color: green;
 }
@@ -37,4 +41,9 @@ th {
 
 #spinner img {
     vertical-align: middle;
+}
+
+label {
+    display: inline-block;
+    width: 15em;
 }

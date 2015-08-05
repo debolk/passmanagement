@@ -10,6 +10,7 @@ require '../vendor/autoload.php';
 require '../config.php';
 require '../LDAP.php';
 require '../OAuth.php';
+require '../Deursoos.php';
 
 // All responses of this API are valid JSON
 header('Content-Type: application/json');
@@ -47,6 +48,9 @@ if (! $ldap->login()) {
     fatalError(500, 'Cannot login to LDAP server using configured credentials');
 }
 
+// Contact door for pass adding
+$deur = new Deursoos($config['deursoos']);
+
 /*
  * API endpoint definition
  */
@@ -70,8 +74,16 @@ $app->delete('/users/:uid', function($uid) use ($app, $ldap) {
 });
 
 // Add a pass to a user
-$app->post('/users/:uid/pass', function($uid) use ($app, $ldap) {
-    $ldap->addPass($uid);
+$app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur) {
+
+    // Check the scanned pass
+    $scan = $deur->validatePassAttempt();
+    if ($scan !== Deursoos::PASS_OKAY) {
+        fatalError(407, $scan);
+    }
+
+    // Store pass on user
+    $ldap->addPass($uid, $deur->getLastRefusedPass());
     $app->response->setStatus(204); // HTTP 204 No Content
 });
 
@@ -79,6 +91,11 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap) {
 $app->delete('/users/:uid/pass', function($uid) use ($app, $ldap) {
     $ldap->removePass($uid);
     $app->response->setStatus(204); // HTTP 204 No Content
+});
+
+// Check the last scanned pass was valid
+$app->get('/deur/checkpass', function() use ($app, $ldap, $deur) {
+    echo json_encode(['check' => $deur->validatePassAttempt()]);
 });
 
 // Run the application

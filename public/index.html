@@ -12,6 +12,13 @@
 </head>
 <body>
     <h1>Pasbeheer voordeur soci&euml;teit</h1>
+    <p>
+        Met Pasbeheer kun je leden toegang geven tot de voordeur van de soci&euml;teit.
+        Als je een pas wilt intrekken, klik dan op "heeft pas".
+        Wil je een lid de toegang ontnemen, klik dan op "krijgt toegang".
+        <strong>Het is belangrijk voor de beveiliging dat je de goede optie kiest.</strong>
+        Nieuwe passen kun je hieronder toevoegen.
+    </p>
 
     <div id="error"></div>
 
@@ -33,20 +40,26 @@
     </div>
 
     <h2>Nieuwe pas instellen</h2>
+    <ol>
+        <li>Laat het lid zijn of haar pas <strong>twee keer</strong> voor de scanner houden.</li>
+        <li>Kies hieronder de naam van het lid en klik "Pas instellen". </li>
+    </ol>
     <p>
-        Laat het lid zijn of haar pas tweemaal voor de scanner houden. Pasbeheer haalt automatisch de laatste twee gescande passen op uit de database, en voegt het pasnummer hier toe. Als de laatste twee pasnummer niet hetzelfde zijn, kun je de pas niet instellen.
+        Pasbeheer voegt de pas alleen toe als 1) de laatste twee gescande passen hetzelfde waren, en 2) de passen maximaal 10 minuten geleden gescand waren.
     </p>
-    <form action="/aanmaken">
+    <form action="/aanmaken" id="new_pass" method="POST">
         <p>
             <label for="user_id">Lid</label>
             <select name="user_id" id="user_id"></select>
         </p>
         <p>
-            <label for="pass_id">Pas</label>
-            <input type="text" name="pass_id" id="pass_id" disabled>
+            <label for="valid_pass">Gescande pas controleren</label>
+            <button name="valid_pass" id="valid_pass">Controleren</button>
+            <span id="pass_result"></span>
         </p>
         <p>
-            <input type="submit" name="" value="Pas instellen">
+            <label for="submit">Pas instellen</label>
+            <input type="submit" name="" id="submit" value="Pas instellen" disabled>
         </p>
     </form>
 

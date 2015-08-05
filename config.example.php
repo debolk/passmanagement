@@ -10,5 +10,8 @@ $config = [
     'oauth' => [
         'authorisation_server' => '',
         'resource'             => ''
+    ],
+    'deursoos' => [
+        'failures' => ''
     ]
 ];

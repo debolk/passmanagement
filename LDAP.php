@@ -112,12 +112,16 @@ class LDAP
 
     public function addPass($uid, $pass)
     {
-
+        // Find user
+        // if already have pass
+            // return throw error
+        // add pass
     }
 
     public function removePass($uid)
     {
-
+        // Find pass
+        // remove pass
     }
 
     /**

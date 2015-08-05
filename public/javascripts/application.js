@@ -43,9 +43,31 @@ $(document).ready(function(){
             }
         });
 
-        // Event handlers
+        // Load members for form
+        $.ajax({
+            url: 'https://people.debolk.nl/members/list?access_token='+window.access_token,
+            type: 'GET',
+            dataType: 'json',
+            success: function(members) {
+                // Sort by name
+                members.sort(function(a,b){
+                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                });
+                // Add to select
+                $(members).each(function(){
+                    $('#user_id').append($('<option>').val(this.uid).html(this.name));
+                });
+            },
+            error: function(error) {
+                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+            }
+        });
+
+        // Bind event handlers
         $('#passes').on('click', '.status.access', changeAccess);
         $('#passes').on('click', '.status.pass', changePass);
+        $('#valid_pass').on('click', checkPass);
+        $('#new_pass').on('submit', addPass);
     }
 
     /**
@@ -136,21 +158,76 @@ $(document).ready(function(){
             });
         }
         else {
-
-            // Optimistic interface update
-            $(this).removeClass('no').addClass('yes').html('&check; heeft pas');
-
-            // Send call
-            $.ajax({
-                url: '/users/'+$(this).attr('data-uid')+'/pass?access_token='+window.access_token,
-                type: 'POST',
-                dataType: 'json',
-                error: function(error) {
-                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-                }
-            });
+            showError('Je kunt geen pas toeveogen op deze manier. Gebruik het formulier onderaan de pagina');
         }
+    };
+
+    /**
+     * Check the pass has been scanned
+     * @param  {Event} event click event of the link
+     * @return {undefined}
+     */
+    var checkPass = function(event) {
+
+        event.preventDefault();
+
+        var button = $(this);
+        var result = $('#pass_result');
+        var form_submit = $('#submit');
+
+        result.html('<img src="images/spinner.gif" width="16" height="16">');
+        button.prop('disabled', true);
+        form_submit.prop('disabled', true);
+
+        // Send call
+        $.ajax({
+            url: '/deur/checkpass?access_token='+window.access_token,
+            type: 'GET',
+            dataType: 'json',
+            success: function(answer) {
+
+                // Enable button for recheck
+                button.prop('disabled', false);
+
+                // Update response text
+                if (answer.check == 'door_response_not_okay') {
+                    result.html('Kan de deur niet bereiken');
+
+                }
+                else if (answer.check == 'pass_mismatch') {
+                    result.html('Laatste twee passen niet hetzelfde');
+                }
+                else if (answer.check == 'entries_too_old') {
+                    result.html('Pas meer dan 10 minuten geleden gescand');
+                }
+                else if (answer.check == 'pass_okay') {
+                    result.html('Pas is correct');
+                    $('#submit').prop('disabled', false);
+                }
+            },
+            error: function(error) {
+                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
+            }
+        });
     }
+
+    /**
+     * Store the pass on a user
+     * @param  {Event} event click event of the link
+     * @return {undefined}
+     */
+    var addPass = function(event) {
+
+        event.preventDefault();
+
+        // get user id
+        // send call
+            // if success
+                // show notification
+                // add entry
+            // if error
+                // show error
+    };
 
     // Start by authenticating to OAuth
     var oauth = new OAuth(config);
