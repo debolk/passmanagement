@@ -69,8 +69,12 @@ $app->post('/users/:uid', function($uid) use ($app, $ldap) {
 
 // Deny a user access to the door
 $app->delete('/users/:uid', function($uid) use ($app, $ldap) {
-    $ldap->denyAccess($uid);
-    $app->response->setStatus(204); // HTTP 204 No Content
+    if ($ldap->denyAccess($uid)) {
+        $app->response->setStatus(204); // HTTP 204 No Content
+    }
+    else {
+        fatalError(500, 'Could not set user access');
+    }
 });
 
 // Add a pass to a user
@@ -83,17 +87,25 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur) {
     }
 
     // Store pass on user
-    $ldap->addPass($uid, $deur->getLastRefusedPass());
-
-    // Return the entry of the user
-    $app->response->setStatus(200);
-    echo json_encode($ldap->getUser($uid));
+    if ($ldap->addPass($uid, $deur->getLastRefusedPass())) {
+        // Return the entry of the user
+        $app->response->setStatus(200);
+        echo json_encode($ldap->getUser($uid));
+    }
+    else {
+        fatalError(500, 'Could not add pass to user');
+    }
 });
 
 // Remove the pass of a user
 $app->delete('/users/:uid/pass', function($uid) use ($app, $ldap) {
-    $ldap->removePass($uid);
-    $app->response->setStatus(204); // HTTP 204 No Content
+
+    if ($ldap->removePass($uid)) {
+        $app->response->setStatus(204); // HTTP 204 No Content
+    }
+    else {
+        fatalError(500, 'Could not remove pass');
+    }
 });
 
 // Check the last scanned pass was valid

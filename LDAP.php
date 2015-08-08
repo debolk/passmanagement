@@ -33,6 +33,9 @@ class LDAP
         return @ldap_bind($this->ldap, $this->config['username'], $this->config['password']);
     }
 
+    /**
+     * Decommission the ldap-connection
+     */
     public function __destruct()
     {
         @ldap_close($this->ldap);
@@ -97,12 +100,15 @@ class LDAP
     /**
      * Add the access flag to a user
      * @param  string $uid the user ID to update
-     * @return void
+     * @return boolean
      */
     public function grantAccess($uid)
     {
         // Find the user
         $user = $this->findUser($uid);
+        if (!$user) {
+            return false;
+        }
 
         // Determine if we need to update
         if (in_array('gosaIntranetAccount', $user['objectclass'])) {
@@ -112,18 +118,21 @@ class LDAP
         // Add flag to user
         $patch = ['objectclass' => ['gosaIntranetAccount']];
         ldap_mod_add($this->ldap, $user['dn'], $patch);
-
+        return true;
     }
 
     /**
      * Remove the access flag of a user
      * @param  string $uid user ID to update
-     * @return void
+     * @return boolean
      */
     public function denyAccess($uid)
     {
         // Find the user
         $user = $this->findUser($uid);
+        if (!$user) {
+            return false;
+        }
 
         // Determine if we need to update
         if (! in_array('gosaIntranetAccount', $user['objectclass'])) {
@@ -133,17 +142,21 @@ class LDAP
         // Remove flag from user
         $patch = ['objectclass' => ['gosaIntranetAccount']];
         ldap_mod_del($this->ldap, $user['dn'], $patch);
+        return true;
     }
 
     /**
      * Add a new pass to a user
      * @param string $uid  the userID to add to
      * @param string $pass the full pass number
-     * @return void
+     * @return boolean
      */
     public function addPass($uid, $pass)
     {
         $user = $this->findUser($uid);
+        if (!$user) {
+            return false;
+        }
 
         // Build new entry
         $dn = 'cn=ovchipkaart,' . $user['dn'];
@@ -153,30 +166,34 @@ class LDAP
             'serialNumber' => $pass
         ];
         ldap_add($this->ldap, $dn, $entry);
+        return true;
     }
 
     /**
      * Delete the pass of a user
      * @param  string $uid the user ID to remove from
-     * @return void
+     * @return boolean
      */
     public function removePass($uid)
     {
         $pass = $this->findPass($uid);
+        if (!$pass) {
+            return false;
+        }
         ldap_delete($this->ldap, $pass['dn']);
+        return true;
     }
 
     /**
      * Find a LDAP user by its uid
      * @param  string    $uid the user id to find
-     * @return array          details of the user
-     * @throws Exception      when user does not exist
+     * @return array          details of the user, or null if it doesn't exist
      */
     private function findUser($uid)
     {
         $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['gosaIntranetAccount']);
         if (ldap_count_entries($this->ldap, $search) !== 1) {
-            throw new Exception('User does not exist');
+            return null;
         }
         return ldap_get_entries($this->ldap, $search)[0];
     }
@@ -184,16 +201,20 @@ class LDAP
     /**
      * Find the pass based on a user id
      * @param  strin $uid the user ID
-     * @return array      details of the pass
-     * @throws Exception  when the user or the pass does not exist
+     * @return array      details of the pass, or null if it doesn't exist
      */
     private function findPass($uid)
     {
         $user = $this->findUser($uid);
+        if ($user === null) {
+            return null;
+        }
+
         $pass = ldap_search($this->ldap, $user['dn'], "(&(objectClass=device)(cn=ovchipkaart))");
         if (ldap_count_entries($this->ldap, $pass) !== 1) {
-            throw new Exception('This user has no pass');
+            return null;
         }
+
         return ldap_get_entries($this->ldap, $pass)[0];
     }
 }
