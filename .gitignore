@@ -2,3 +2,5 @@ vendor
 bower_components
 config.php
 public/javascripts/config.js
+.vagrant
+
