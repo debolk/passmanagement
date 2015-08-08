@@ -114,13 +114,20 @@ class LDAP
      * Add a new pass to a user
      * @param string $uid  the userID to add to
      * @param string $pass the full pass number
+     * @return void
      */
     public function addPass($uid, $pass)
     {
-        // Find user
-        // if already have pass
-            // return throw error
-        // add pass
+        $user = $this->findUser($uid);
+
+        // Build new entry
+        $dn = 'cn=ovchipkaart,' . $user['dn'];
+        $entry = [
+            'objectClass' => 'device',
+            'cn' => 'ovchipkaart',
+            'serialNumber' => $pass
+        ];
+        ldap_add($this->ldap, $dn, $entry);
     }
 
     /**
