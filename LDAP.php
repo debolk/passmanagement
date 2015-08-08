@@ -110,6 +110,11 @@ class LDAP
         ldap_mod_del($this->ldap, $user['dn'], $patch);
     }
 
+    /**
+     * Add a new pass to a user
+     * @param string $uid  the userID to add to
+     * @param string $pass the full pass number
+     */
     public function addPass($uid, $pass)
     {
         // Find user
@@ -118,6 +123,11 @@ class LDAP
         // add pass
     }
 
+    /**
+     * Delete the pass of a user
+     * @param  string $uid the user ID to remove from
+     * @return void
+     */
     public function removePass($uid)
     {
         // Find pass
