@@ -51,8 +51,11 @@ class Deursoos
             return self::ERROR_DOOR_RESPONSE_NOT_OKAY;
         }
 
-        // Get first and second line timestamp and card
-        $regex = preg_match("/(.+? CEST 20[0-9]{2}): (.+?)\n(.+? CEST 20[0-9]{2}): (.+?)\n/", $request, $matches);
+        // Get the data of the last two lines
+        preg_match("/(.+?\n.+?)$/", $request, $last_two_lines);
+
+        // Filter the timestamps and card numbers
+        $regex = preg_match("/(.* CEST 20[0-9]{2}): (.*)\n(.* CEST 20[0-9]{2}): (.*)/", $last_two_lines[1], $matches);
         $time_second = $matches[3];
         $pass_first  = $matches[2];
         $pass_second = $matches[4];
