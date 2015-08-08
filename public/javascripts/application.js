@@ -19,9 +19,6 @@ $(document).ready(function(){
         // Store access token
         window.access_token = access_token;
 
-        // Compile template
-        var template_row = Handlebars.compile($("#row").html());
-
         // Load all passes
         $.ajax({
             url: '/users?access_token='+window.access_token,
@@ -230,9 +227,13 @@ $(document).ready(function(){
         $.ajax({
             url: '/users/'+$('#user_id').val()+'/pass?access_token='+window.access_token,
             type: 'POST',
-            dataType: 'html',
-            success: function() {
-                //FIXME add pass to interface
+            dataType: 'json',
+            success: function(user) {
+
+                // Add pass to UI list
+                $('#passes tbody').append(template_row(user));
+
+                // Clear pass check form interface
                 $('#pass_result').html('');
             },
             error: function(error) {
@@ -245,4 +246,7 @@ $(document).ready(function(){
     // Start by authenticating to OAuth
     var oauth = new OAuth(config);
     oauth.authenticate(initApplication);
+
+    // Compile template
+    var template_row = Handlebars.compile($("#row").html());
 });

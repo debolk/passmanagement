@@ -70,6 +70,31 @@ class LDAP
     }
 
     /**
+     * Find the pass and access data of a specific user
+     * @param  string $uid the user id to retrieve
+     * @return array      a users information, containing uid, name, pass and access
+     */
+    public function getUser($uid)
+    {
+        $user = $this->findUser($uid);
+        if (!$user) {
+            return null;
+        }
+
+        $pass = $this->findPass($uid);
+        if (!$pass) {
+            return null;
+        }
+
+        return [
+            'uid'    => $user['uid'][0],
+            'name'   => $user['cn'][0],
+            'pass'   => true,
+            'access' => in_array('gosaIntranetAccount', $user['objectclass'])
+        ];
+    }
+
+    /**
      * Add the access flag to a user
      * @param  string $uid the user ID to update
      * @return void

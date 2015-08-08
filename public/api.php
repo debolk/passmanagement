@@ -84,7 +84,10 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur) {
 
     // Store pass on user
     $ldap->addPass($uid, $deur->getLastRefusedPass());
-    $app->response->setStatus(204); // HTTP 204 No Content
+
+    // Return the entry of the user
+    $app->response->setStatus(200);
+    echo json_encode($ldap->getUser($uid));
 });
 
 // Remove the pass of a user
