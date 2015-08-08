@@ -130,8 +130,8 @@ class LDAP
      */
     public function removePass($uid)
     {
-        // Find pass
-        // remove pass
+        $pass = $this->findPass($uid);
+        ldap_delete($this->ldap, $pass['dn']);
     }
 
     /**
@@ -147,5 +147,21 @@ class LDAP
             throw new Exception('User does not exist');
         }
         return ldap_get_entries($this->ldap, $search)[0];
+    }
+
+    /**
+     * Find the pass based on a user id
+     * @param  strin $uid the user ID
+     * @return array      details of the pass
+     * @throws Exception  when the user or the pass does not exist
+     */
+    private function findPass($uid)
+    {
+        $user = $this->findUser($uid);
+        $pass = ldap_search($this->ldap, $user['dn'], "(&(objectClass=device)(cn=ovchipkaart))");
+        if (ldap_count_entries($this->ldap, $pass) !== 1) {
+            throw new Exception('This user has no pass');
+        }
+        return ldap_get_entries($this->ldap, $pass)[0];
     }
 }
