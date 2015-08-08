@@ -144,6 +144,12 @@ $(document).ready(function(){
         // Determine whether to grant or deny
         if ($(this).hasClass('yes')) {
 
+            // This action is irreversible without the pass
+            if (! confirm('Je kunt deze pas niet meer toevoegen zonder de pas opnieuw te scannen. '
+                                +'Weet je zeker dat je de pas wilt verwijderen?')) {
+                return;
+            }
+
             // Optimistic interface update
             $(this).removeClass('yes').addClass('no').html('&cross; geen pas');
 
@@ -158,7 +164,7 @@ $(document).ready(function(){
             });
         }
         else {
-            showError('Je kunt geen pas toeveogen op deze manier. Gebruik het formulier onderaan de pagina');
+            alert('Je kunt geen pas toevoegen op deze manier. Gebruik het formulier onderaan de pagina');
         }
     };
 
