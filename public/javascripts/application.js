@@ -223,15 +223,25 @@ $(document).ready(function(){
 
         event.preventDefault();
 
+        var uid = $('#user_id').val();
+
         // Send call
         $.ajax({
-            url: '/users/'+$('#user_id').val()+'/pass?access_token='+window.access_token,
+            url: '/users/'+uid+'/pass?access_token='+window.access_token,
             type: 'POST',
             dataType: 'json',
             success: function(user) {
 
-                // Add pass to UI list
-                $('#passes tbody').append(template_row(user));
+                // Update current row, or add a new one
+                var new_row = template_row(user);
+                var existing_row = $('tr[data-uid="'+uid+'"]', '#passes tbody');
+
+                if (existing_row.length > 0) {
+                    existing_row.replaceWith(new_row);
+                }
+                else {
+                    $('#passes tbody').append(new_row);
+                }
 
                 // Clear pass check form interface
                 $('#pass_result').html('');
