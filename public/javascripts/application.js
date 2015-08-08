@@ -247,7 +247,6 @@ $(document).ready(function(){
                 $('#pass_result').html('');
             },
             error: function(error) {
-                //FIXME show error on double-adding passes
                 showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
             }
         });
