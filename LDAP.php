@@ -2,7 +2,16 @@
 
 class LDAP
 {
+    /**
+     * LDAP connection
+     * @var resource
+     */
     private $ldap;
+
+    /**
+     * Configuration object
+     * @var array
+     */
     private $config;
 
     /**
