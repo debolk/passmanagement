@@ -23,8 +23,8 @@ class Deursoos
     private $lastPassID;
 
     /**
-     * Setup LDAP class, does not connect or login
-     * @param array $config LDAP-configuration
+     * Setup class
+     * @param array $config configuration object for door
      */
     public function __construct($config)
     {
