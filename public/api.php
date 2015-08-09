@@ -24,7 +24,7 @@ header('Content-Type: application/json');
  */
 function fatalError($status_code, $message)
 {
-    error_log($message);
+    error_log("{$status_code}:{$message}");
     http_response_code($status_code);
     echo json_encode(['error' => $message]);
     exit;
