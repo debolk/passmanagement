@@ -15,6 +15,12 @@ class LDAP
     private $config;
 
     /**
+     * Response code constants
+     */
+    const ERROR_USER_NOT_FOUND  = 'user_not_found';
+    const ERROR_DOUBLE_PASS     = 'user_already_has_a_pass';
+
+    /**
      * Setup LDAP class, does not connect or login
      * @param array $config LDAP-configuration
      */
@@ -165,13 +171,13 @@ class LDAP
         // User must exist
         $user = $this->findUser($uid);
         if (!$user) {
-            return false;
+            return self::ERROR_USER_NOT_FOUND;
         }
 
         // User must not already have a pass
         $existing_pass = $this->findPass($uid);
         if ($existing_pass) {
-            return false;
+            return self::ERROR_DOUBLE_PASS;
         }
 
         // Build new entry

@@ -4,15 +4,6 @@ body {
     font-size: large;
 }
 
-#error {
-    display: none;
-    background-color: #e66;
-    color: white;
-    padding: 1em;
-    margin-bottom: 1em;
-    border-radius: 1em;
-}
-
 .status {
     color: white;
     display: inline-block;
@@ -55,4 +46,36 @@ label {
 
 .okay {
     color: #393;
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    z-index: 101;
+    top: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    -webkit-box-shadow: 0 0 5px black;
+    -moz-box-shadow:    0 0 5px black;
+    box-shadow:         0 0 5px black;
+    padding: 1em;
+
+}
+
+.notification.success {
+    background-color: #BFB;
+}
+
+.notification.error {
+    background-color: #FBB;
+}
+
+.notification h2 {
+    font-size: large;
+    margin: 0 0 0.25em 0;
+}
+
+.notification p {
+    margin-top: 0;
 }

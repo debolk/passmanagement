@@ -9,11 +9,11 @@ $(document).ready(function(){
 
         // Check for authorisation
         if (! access_token) {
-            showError('Geen toegang: je bent uitgelogd of je bent geen bestuur.<br> Herlaad de pagina om opnieuw te proberen.');
+            showNotification('error', 'Geen toegang', 'Je bent uitgelogd of je bent geen bestuur. Herlaad de pagina om opnieuw te proberen.');
             return;
         }
         else {
-            hideError();
+            hideNotifications();
         }
 
         // Store access token
@@ -31,13 +31,11 @@ $(document).ready(function(){
                 });
                 // Add to UI
                 $(passes).each(function(){
-                    $('#passes tbody').append(template_row(this));
+                    $('#passes tbody').append(templates.user(this));
                 });
                 $('#spinner').remove();
             },
-            error: function(error) {
-                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-            }
+            error: showError
         });
 
         // Load members for form
@@ -55,9 +53,7 @@ $(document).ready(function(){
                     $('#user_id').append($('<option>').val(this.uid).html(this.name));
                 });
             },
-            error: function(error) {
-                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-            }
+            error: showError
         });
 
         // Bind event handlers
@@ -65,28 +61,45 @@ $(document).ready(function(){
         $('#passes').on('click', '.status.pass', changePass);
         $('#valid_pass').on('click', checkPass);
         $('#new_pass').on('submit', addPass);
+        $('body').on('click', '.seen', hideNotifications);
     }
 
     /**
-     * Show an error message
+     * Show an API error message
      * @param  {Error} XMLHttpRequest error object
      * @return {undefined}
      */
-    var showError = function(message, technical) {
-        if (technical === undefined) {
-            $('#error').html(message).show();
-        }
-        else {
-            $('#error').html(message+'<br><br>Technische details: '+technical).show();
-        }
+    var showError = function(error) {
+        var message = error.message + '<br><br> Meer informatie: <a href="'+error.href+'">'+error.href+'</a>';
+        showNotification('error', error.title, message);
     };
 
     /**
-     * Hide the error message
+     * Show a notification to the user
+     * @param  {String} type    either "error", "warning", or "success"
+     * @param  {String} title   title of the message to show
+     * @param  {String} message body text with explanation
      * @return {undefined}
      */
-    var hideError = function() {
-        $('#error').html('').hide();
+    var showNotification = function(type, title, message)
+    {
+        $('body').append(templates.notification({
+            type: type,
+            title: title,
+            message: message
+        }));
+    };
+
+    /**
+     * Hide the error messages and notifications
+     * @param  {Event}     optional event handler to cancel (usually a link)
+     * @return {undefined}
+     */
+    var hideNotifications = function(event) {
+        if (event !== undefined) {
+            event.preventDefault();
+        }
+        $('.notification').remove();
     };
 
     /**
@@ -108,9 +121,7 @@ $(document).ready(function(){
                 url: '/users/'+$(this).attr('data-uid')+'?access_token='+window.access_token,
                 type: 'DELETE',
                 dataType: 'json',
-                error: function(error) {
-                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-                }
+                error: showError
             });
         }
         else {
@@ -123,9 +134,7 @@ $(document).ready(function(){
                 url: '/users/'+$(this).attr('data-uid')+'?access_token='+window.access_token,
                 type: 'POST',
                 dataType: 'json',
-                error: function(error) {
-                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-                }
+                error: showError
             });
         }
     }
@@ -155,9 +164,7 @@ $(document).ready(function(){
                 url: '/users/'+$(this).attr('data-uid')+'/pass?access_token='+window.access_token,
                 type: 'DELETE',
                 dataType: 'json',
-                error: function(error) {
-                    showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-                }
+                error: showError
             });
         }
         else {
@@ -211,9 +218,7 @@ $(document).ready(function(){
                     $('#submit').prop('disabled', false);
                 }
             },
-            error: function(error) {
-                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-            }
+            error: showError
         });
     }
 
@@ -236,7 +241,7 @@ $(document).ready(function(){
             success: function(user) {
 
                 // Update current row, or add a new one
-                var new_row = template_row(user);
+                var new_row = templates.user(user);
                 var existing_row = $('tr[data-uid="'+uid+'"]', '#passes tbody');
 
                 if (existing_row.length > 0) {
@@ -249,16 +254,17 @@ $(document).ready(function(){
                 // Clear pass check form interface
                 $('#pass_result').html('');
             },
-            error: function(error) {
-                showError('Foutmelding bij communicatie met server', error.status + '-' + error.responseURL);
-            }
+            error: showError
         });
+    };
+
+    // Compile templates
+    var templates = {
+        user:         Handlebars.compile($("#user").html()),
+        notification: Handlebars.compile($("#notification").html())
     };
 
     // Start by authenticating to OAuth
     var oauth = new OAuth(config);
     oauth.authenticate(initApplication);
-
-    // Compile template
-    var template_row = Handlebars.compile($("#row").html());
 });

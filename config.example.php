@@ -1,6 +1,9 @@
 <?php
 
 $config = [
+    'application' => [
+        'base_url' => ''
+    ],
     'ldap' => [
         'host'     => '',
         'username' => '',

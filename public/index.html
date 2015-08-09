@@ -65,7 +65,7 @@
         </p>
     </form>
 
-    <script type="text/x-handlebars" id="row">
+    <script type="text/x-handlebars" id="user">
         <tr data-uid="{{uid}}">
             <td>{{ name }}</td>
             <td>
@@ -83,6 +83,16 @@
                 {{/if}}
             </td>
         </tr>
+    </script>
+
+    <script type="text/x-handlebars" id="notification">
+        <div class="notification {{type}}">
+            <h2>{{{title}}}</h2>
+            <p>{{{message}}}</p>
+            <p>
+                <a href="#" class="seen">Verbergen</a>
+            </p>
+        </div>
     </script>
 </body>
 </html>
