@@ -69,8 +69,9 @@ $(document).ready(function(){
      * @param  {Error} XMLHttpRequest error object
      * @return {undefined}
      */
-    var showError = function(error) {
-        var message = error.message + '<br><br> Meer informatie: <a href="'+error.href+'">'+error.href+'</a>';
+    var showError = function(xhr) {
+        var error = JSON.parse(xhr.response);
+        var message = error.details + '<br><br> Meer informatie: <a href="'+error.href+'">'+error.href+'</a>';
         showNotification('error', error.title, message);
     };
 

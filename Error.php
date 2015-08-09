@@ -34,12 +34,12 @@ class Error
 
         // Send standard error response to client
         http_response_code($http_code);
-        echo json_encode(['errors' => [
+        echo json_encode([
             'code'    => $error_code,
             'title'   => $title,
             'details' => $details,
-            'href'    => $this->config['base_url'] . 'docs/#'.$error_code
-        ]]);
+            'href'    => $this->config['base_url'] . 'docs#'.$error_code
+        ]);
         exit;
     }
 }
