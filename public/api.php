@@ -93,6 +93,9 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
     elseif ($pass === LDAP::ERROR_DOUBLE_PASS) {
         $error->send(409, 'user_has_pass', 'The user already has a pass', 'This user already has a pass set. A second one cannot be added.');
     }
+    elseif ($pass === LDAP::ERROR_PASS_EXISTS) {
+        $error->send(409, 'pass_exists', 'This pass is in use', 'Another user has registered this pass. It cannot be added again.');
+    }
     else {
         // Return the new entry of the user
         $app->response->setStatus(200);

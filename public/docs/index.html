@@ -219,6 +219,14 @@
                     POST /users/:uid/pass
                 </td>
             </tr>
+            <tr>
+                <td>409 Conflict</td>
+                <td><a name="errors_pass_exists">pass_exists</a></td>
+                <td>You tried to add the last-scanned pass to a user, but this pass is already in system. It has been registered by another user. Remove the existing registration first before adding this pass to a new user.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
         </tbody>
     </table>
 

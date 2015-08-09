@@ -24,6 +24,7 @@ class LDAP
      */
     const ERROR_USER_NOT_FOUND  = 'user_not_found';
     const ERROR_DOUBLE_PASS     = 'user_already_has_a_pass';
+    const ERROR_PASS_EXISTS     = 'pass_exists';
 
     /**
      * Setup LDAP class, does not connect or login
@@ -167,11 +168,11 @@ class LDAP
 
     /**
      * Add a new pass to a user
-     * @param string $uid  the userID to add to
-     * @param string $pass the full pass number
-     * @return boolean
+     * @param string $uid        the userID to add to
+     * @param string $passNumber the full pass number
+     * @return boolean           true if succesful, or a error constant otherwise
      */
-    public function addPass($uid, $pass)
+    public function addPass($uid, $passNumber)
     {
         // User must exist
         $user = $this->findUser($uid);
@@ -185,12 +186,17 @@ class LDAP
             return self::ERROR_DOUBLE_PASS;
         }
 
+        // Pass may not exist in the system for another user
+        if ($this->passExists($passNumber)){
+            return self::ERROR_PASS_EXISTS;
+        }
+
         // Build new entry
         $dn = 'cn=ovchipkaart,' . $user['dn'];
         $entry = [
             'objectClass' => 'device',
             'cn' => 'ovchipkaart',
-            'serialNumber' => $pass
+            'serialNumber' => $passNumber
         ];
         ldap_add($this->ldap, $dn, $entry);
         return true;
@@ -243,5 +249,16 @@ class LDAP
         }
 
         return ldap_get_entries($this->ldap, $pass)[0];
+    }
+
+    /**
+     * Determine whether a passNumber has been registered in LDAP
+     * @param  string $passNumber full pass number
+     * @return boolean            true if the pass exists
+     */
+    private function passExists($passNumber)
+    {
+        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=device)(cn=ovchipkaart)(serialNumber=$passNumber))");
+        return (ldap_count_entries($this->ldap, $search) > 0);
     }
 }
