@@ -13,14 +13,16 @@ require '../OAuth.php';
 require '../Deursoos.php';
 require '../Error.php';
 
-// Start error handling
+// Start classes we need to work
 $error = new Error($config['application']);
+$oauth = new OAuth($config['oauth']);
+$ldap  = new LDAP($config['ldap']);
+$deur  = new Deursoos($config['deursoos']);
 
 // All responses of this API are valid JSON
 header('Content-Type: application/json');
 
-// Validate access token
-$oauth = new OAuth($config['oauth']);
+// Validate we have a proper access token
 if (! isset($_GET['access_token'])) {
     $error->send(403, 'oauth_token_missing', 'Missing OAuth token', 'Client must supply a valid OAuth2 access token with board-level permissions');
 }
@@ -28,17 +30,13 @@ if (! $oauth->validToken($_GET['access_token'])) {
     $error->send(400, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have board-level permissions');
 }
 
-// Setup LDAP
-$ldap = new LDAP($config['ldap']);
+// Setup the LDAP connection
 if (!$ldap->connect()) {
     $error->send(502, 'ldap_error', 'LDAP server not responding', 'The API cannot connect to the LDAP server');
 }
 if (! $ldap->login()) {
     $error->send(502, 'ldap_error', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
 }
-
-// Contact door for pass adding
-$deur = new Deursoos($config['deursoos']);
 
 /*
  * API endpoint definition
