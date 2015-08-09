@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+    <title>API documentation Passmanagement</title>
+
+    <link rel="stylesheet" type="text/css" href="docs.css">
+</head>
+<body>
+    <h1>API documentation Passmanagement</h1>
+    <p>
+        The Passmanagement API serves two important purposes: it is the backend for the Passmanagement user interface. Board members can use this interface to manage passes for the front door of De Bolk. Additionally, it manages access control for passes when scanned, granting access or denying it. The system maintains the history of all pass attempts.
+    </p>
+
+    <h2>Contents</h2>
+    <nav>
+        <ol>
+            <li><a href="#auth" title="Authentication &amp; authorisation">Authentication &amp; authorisation</a></li>
+            <li><a href="#apireference" title="API reference">API reference</a></li>
+            <li><a href="#responses" title="Responses">Responses</a></li>
+            <li><a href="#errors" title="Errors">Errors</a></li>
+        </ol>
+    </nav>
+
+    <a name="auth"><h2>Authentication &amp; authorisation</h2></a>
+    <p>
+        This API is protected as an OAuth2 resource server. You must retrieve a valid access token from <a href="https://auth.debolk.nl" title="auth.debolk.nl">auth.debolk.nl</a>. This access token must be included on every API request as a GET parameter:
+    </p>
+    <code>
+        http://passmanagement.i.bolkhuis.nl/endpoint?access_token=XYZ
+    </code>
+    <p>
+        This is a board-only system. Users must have board-level permissions or equivalent to be granted access to the API.
+    </p>
+
+    <a name="apireference"><h2>API reference</h2></a>
+    <p>
+        The API supports the following endpoints. All endpoints accept and return only JSON-encoded data. Note that all endpoints must be called with a valid OAuth2 access token (see <a href="#auth" title="authentication">authentication</a>). The listed responses and HTTP response codes are only sent when a request is succesful. If a fatal error occurs, an <a href="#errors" title="error response">error response</a> is sent instead.
+    </p>
+    <table>
+        <thead><tr>
+            <th>Method</th>
+            <th>URL</th>
+            <th>Purpose</th>
+            <th class="single-word">HTTP response code</th>
+            <th class="single-word">Response (<a href="#responses" title="details">details</a>)</th>
+        </tr></thead>
+        <tbody>
+            <tr>
+                <td>GET</td>
+                <td>/users</td>
+                <td>List of all users with pass data</td>
+                <td>200 Okay</td>
+                <td><code>[{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}, ...]</code></td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/users/:uid</td>
+                <td>Grant this user (identified by :uid) access to the door</td>
+                <td>204 No Content</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td>/users/:uid</td>
+                <td>Deny this user (identified by :uid) access to the door</td>
+                <td>204 No Content</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>POST</td>
+                <td>/users/:uid/pass</td>
+                <td>Add the last pass that was scanned at the door and failed to this user, pending some validations. Returns the details of the user after adding the pass.</td>
+                <td>200 Okay</td>
+                <td><code>{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}</code></td>
+            </tr>
+            <tr>
+                <td>DELETE</td>
+                <td>/users/:uid/pass</td>
+                <td>Remove the pass of a user (identified by :uid)</td>
+                <td>204 No Content</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>GET</td>
+                <td>/deur/checkpass</td>
+                <td>Check whether the last pass that was scanned at the door and failed, meets the requirements to be added to the system</td>
+                <td>200 Okay</td>
+                <td><code>{"check": "pass_okay"}</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a name="responses"><h2>Responses</h2></a>
+    <p>
+        A basic response object about a user has four properties: uid (string), name (string), pass (boolean) and access (boolean). The uid is the username of the Bolkaccount of this user. The name field contains the full name (first and last name) of the user. Note that users are not sorted by their name. The pass field is true if the user has a valid pass in the system, false otherwise. The access field is only true if the user is allowed to use the door, false otherwise. A user must have both these fields to be true to be able to enter the soos using the system.
+    </p>
+    <p>
+        The /deur/checkpass call returns the status of the last pass which failed to gain access to the system. There are four possible responses which are sent with a HTTP 200 Okay response. Only if the response is "pass_okay" can the pass be added to a user. These responses are:
+        <dl>
+            <dt>pass_okay</dt>
+            <dd>The last pass has scanned succesfully and can be added to a user</dd>
+
+            <dt>door_response_not_okay</dt>
+            <dd>The door cannot be reached</dd>
+
+            <dt>pass_mismatch</dt>
+            <dd>The last two passes that were scanned at the door are not identical</dd>
+
+            <dt>entries_too_old</dt>
+            <dd>The last pass was scanned more than 10 minutes ago</dd>
+        </dl>
+    </p>
+
+    <a name="errors"><h2>Errors</h2></a>
+    <p>
+        The API returns JSON objects when an error occurs. An error response always has the following format:
+    </p>
+
+    <code>
+        { <br>
+            "code": "user_not_found", <br>
+            "title": "User cannot be found", <br>
+            "details": "The requested user could not found. It may have been deleted. ", <br>
+            "href": "http://passmanagement.i.bolkhuis.nl/docs/#errors_user_not_found" <br>
+        }
+    </code>
+
+    <p>
+        The code is a string that refers to the application-specific error code. The title and details fields together form a coherent explanation of the error. You should show the title and details to the end-user and allow them to correct their mistake if applicable. You should not show the code field to the user, it is for internal usage only and is not guaranteed to be readable by humans. The href field refers to the error explanation in this documentation.
+    </p>
+
+    <p>
+        In case of catastrophic server crashes and unexpected conditions, the API may return random PHP errors.
+    </p>
+
+    <p>
+        All possible error codes are listed in the table below.
+    </p>
+
+    <table>
+        <thead><tr>
+            <th>HTTP status</th>
+            <th>Code</th>
+            <th>Problem</th>
+            <th>Endpoint</th>
+        </tr></thead>
+        <tbody>
+            <tr>
+                <td>403 Unauthorized</td>
+                <td>oauth_token_missing</td>
+                <td>You have not sent an OAuth access token as a GET parameter: /endpoint/access_token=XYZ</td>
+                <td class="single-word">All endpoints</td>
+            </tr>
+            <tr>
+                <td>403 Forbidden</td>
+                <td>oauth_token_invalid</td>
+                <td>You have sent an oauth token, but it was not acceptable. There are three possible reasons: a) the acces token is invalid, b) the access token has expired, c) the user does not have board-level permissions.</td>
+                <td class="single-word">All endpoints</td>
+            </tr>
+            <tr>
+                <td>502 Bad Gateway</td>
+                <td>ldap_unavailable</td>
+                <td>The LDAP server is unreachable. This is a temporary condition, or the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
+                <td class="single-word">All endpoints</td>
+            </tr>
+            <tr>
+                <td>502 Bad Gateway</td>
+                <td>ldap_login_failure</td>
+                <td>The LDAP server is available, but the credentials are wrong. This is not a temporary condition: the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
+                <td class="single-word">All endpoints</td>
+            </tr>
+            <tr>
+                <td>500 Internal Server Error</td>
+                <td>internal_error</td>
+                <td>The system could not complete the requested action. A more specific error message is unavailable. </td>
+                <td class="single-word">
+                    POST /users/:uid <br>
+                    DELETE /users/:uid <br>
+                    DELETE /users/:uid/pass
+                </td>
+            </tr>
+            <tr>
+                <td>407 Proxy Authentication Required</td>
+                <td>pass_scan_failed</td>
+                <td>You tried to a the last-scanned pass to a user, but the attempt is not acceptable. Always call /deur/checkpass right before adding a pass: this will tell you the exact problem.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
+            <tr>
+                <td>404 Not Found</td>
+                <td>user_not_found</td>
+                <td>You tried to a the last-scanned pass to a user, but the user does not exist.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
+            <tr>
+                <td>409 Conflict</td>
+                <td>user_has_pass</td>
+                <td>You tried to a the last-scanned pass to a user, but the user already has a pass. Remove the existing pass first before adding a new pass.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>
