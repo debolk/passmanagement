@@ -147,31 +147,31 @@
         <tbody>
             <tr>
                 <td>403 Unauthorized</td>
-                <td>oauth_token_missing</td>
+                <td><a name="#errors_oauth_token_missing">oauth_token_missing</a></td>
                 <td>You have not sent an OAuth access token as a GET parameter: /endpoint/access_token=XYZ</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>403 Forbidden</td>
-                <td>oauth_token_invalid</td>
+                <td><a name="#errors_oauth_token_invalid">oauth_token_invalid</a></td>
                 <td>You have sent an oauth token, but it was not acceptable. There are three possible reasons: a) the acces token is invalid, b) the access token has expired, c) the user does not have board-level permissions.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>502 Bad Gateway</td>
-                <td>ldap_unavailable</td>
+                <td><a name="#errors_ldap_unavailable">ldap_unavailable</a></td>
                 <td>The LDAP server is unreachable. This is a temporary condition, or the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>502 Bad Gateway</td>
-                <td>ldap_login_failure</td>
+                <td><a name="#errors_ldap_login_failure">ldap_login_failure</a></td>
                 <td>The LDAP server is available, but the credentials are wrong. This is not a temporary condition: the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>500 Internal Server Error</td>
-                <td>internal_error</td>
+                <td><a name="#errors_internal_error">internal_error</a></td>
                 <td>The system could not complete the requested action. A more specific error message is unavailable. </td>
                 <td class="single-word">
                     POST /users/:uid <br>
@@ -181,7 +181,7 @@
             </tr>
             <tr>
                 <td>407 Proxy Authentication Required</td>
-                <td>pass_scan_failed</td>
+                <td><a name="#errors_pass_scan_failed">pass_scan_failed</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the attempt is not acceptable. Always call /deur/checkpass right before adding a pass: this will tell you the exact problem.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -189,7 +189,7 @@
             </tr>
             <tr>
                 <td>404 Not Found</td>
-                <td>user_not_found</td>
+                <td><a name="#errors_user_not_found">user_not_found</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user does not exist.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -197,7 +197,7 @@
             </tr>
             <tr>
                 <td>409 Conflict</td>
-                <td>user_has_pass</td>
+                <td><a name="#errors_user_has_pass">user_has_pass</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user already has a pass. Remove the existing pass first before adding a new pass.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
