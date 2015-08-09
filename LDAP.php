@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * The LDAP class handles all communication with LDAP, formatting
+ * responses and handling business logic (e.g. a user can have only
+ * one pass at a time, a pass can belong to only one user).
+ */
 class LDAP
 {
     /**

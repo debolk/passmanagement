@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * The Deursoos class handles communication with the physical
+ * controller of the door, checking failures and retrieving passnumbers.
+ */
 class Deursoos
 {
     /**

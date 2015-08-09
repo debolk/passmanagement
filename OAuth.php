@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * The OAuth-class validates the access tokens used to access the API.
+ * The API operates as a resource server, granting access only when a
+ * token is presented that is valid for the resource specified in
+ * config.php, ldap > oauth > resource.
+ */
 class OAuth
 {
     private $config;
