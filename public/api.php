@@ -63,8 +63,12 @@ $app->get('/users', function() use ($ldap) {
 
 // Grant a user access to the door
 $app->post('/users/:uid', function($uid) use ($app, $ldap) {
-    $ldap->grantAccess($uid);
-    $app->response->setStatus(204); // HTTP 204 No Content
+    if ($ldap->grantAccess($uid)) {
+        $app->response->setStatus(204); // HTTP 204 No Content
+    }
+    else {
+        fatalError(500, 'Could not grant this user access to the door');
+    }
 });
 
 // Deny a user access to the door
