@@ -24,18 +24,18 @@ header('Content-Type: application/json');
 
 // Validate we have a proper access token
 if (! isset($_GET['access_token'])) {
-    $error->send(403, 'oauth_token_missing', 'Missing OAuth token', 'Client must supply a valid OAuth2 access token with board-level permissions');
+    $error->send(401, 'oauth_token_missing', 'Missing OAuth token', 'Client must supply a valid OAuth2 access token with board-level permissions');
 }
 if (! $oauth->validToken($_GET['access_token'])) {
-    $error->send(400, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have board-level permissions');
+    $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have board-level permissions');
 }
 
 // Setup the LDAP connection
 if (!$ldap->connect()) {
-    $error->send(502, 'ldap_error', 'LDAP server not responding', 'The API cannot connect to the LDAP server');
+    $error->send(502, 'ldap_unavailable', 'LDAP server not responding', 'The API cannot connect to the LDAP server');
 }
 if (! $ldap->login()) {
-    $error->send(502, 'ldap_error', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
+    $error->send(502, 'ldap_login_failure', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
 }
 
 /*
