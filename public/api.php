@@ -84,8 +84,7 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
     if ($pass === LDAP::ERROR_USER_NOT_FOUND) {
         $error->send(404, 'user_not_found', 'The user cannot be found', 'This user does not exist or has been removed.');
     }
-    elseif ($user === LDAP::ERROR_DOUBLE_PASS) {
-        $error->send(409, 'User already has a pass');
+    elseif ($pass === LDAP::ERROR_DOUBLE_PASS) {
         $error->send(409, 'user_has_pass', 'The user already has a pass', 'This user already has a pass set. A second one cannot be added.');
     }
     else {
