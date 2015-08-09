@@ -71,10 +71,16 @@ $app->delete('/users/:uid', function($uid) use ($app, $ldap, $error) {
 // Add a pass to a user
 $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
 
-    // Check the scanned pass
+    // Check the scanned pass, returning errors when not acceptable
     $scan = $deur->validatePassAttempt();
-    if ($scan !== Deursoos::PASS_OKAY) {
-        $error->send(407, 'pass_scan_failed', 'Failed to validate pass', $scan);
+    if ($scan === Deursoos::ERROR_DOOR_RESPONSE_NOT_OKAY) {
+        $error->send(502, $scan, 'Cannot connect to door', 'The door is unreachable. Last scanned pass could not be retrieved.');
+    }
+    elseif ($scan === Deursoos::ERROR_ENTRIES_TOO_OLD) {
+        $error->send(403, $scan, 'Pass scan has expired', 'The last pass was scanned more than 10 minutes ago.');
+    }
+    elseif ($scan === Deursoos::ERROR_PASS_MISMATCH) {
+        $error->send(403, $scan, 'Last two passes are not identical', 'The last two passes that were scanned are not the same pass.');
     }
 
     // Store pass on user

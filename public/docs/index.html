@@ -130,7 +130,7 @@
     </p>
 
     <p>
-        In case of catastrophic server crashes and unexpected conditions, the API may return random PHP errors.
+        In case of catastrophic server crashes and unexpected conditions, the API could return random PHP errors.
     </p>
 
     <p>
@@ -172,7 +172,7 @@
             <tr>
                 <td>500 Internal Server Error</td>
                 <td><a name="#errors_internal_error">internal_error</a></td>
-                <td>The system could not complete the requested action. A more specific error message is unavailable. </td>
+                <td>The system could not complete the requested action. A more specific error message is unavailable. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">
                     POST /users/:uid <br>
                     DELETE /users/:uid <br>
@@ -180,9 +180,25 @@
                 </td>
             </tr>
             <tr>
-                <td>407 Proxy Authentication Required</td>
-                <td><a name="#errors_pass_scan_failed">pass_scan_failed</a></td>
-                <td>You tried to a the last-scanned pass to a user, but the attempt is not acceptable. Always call /deur/checkpass right before adding a pass: this will tell you the exact problem.</td>
+                <td>502 Bad Gateway</td>
+                <td><a name="#errors_door_response_not_okay">door_response_not_okay</a></td>
+                <td>You tried to add the last-scanned pass to a user, but the door could not be reached to check the pass number. This is not a client error: contact the ICTcom.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
+            <tr>
+                <td>403 Unauthorized</td>
+                <td><a name="#errors_pass_mismatch">pass_mismatch</a></td>
+                <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes scanned at the door are not identical. Rescan the pass twice.</td>
+                <td class="single-word">
+                    POST /users/:uid/pass
+                </td>
+            </tr>
+            <tr>
+                <td>403 Unauthorized</td>
+                <td><a name="#errors_entries_too_old">entries_too_old</a></td>
+                <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes were scanned more than 10 minutes ago. Rescan the pass twice.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
                 </td>
