@@ -162,8 +162,15 @@ class LDAP
      */
     public function addPass($uid, $pass)
     {
+        // User must exist
         $user = $this->findUser($uid);
         if (!$user) {
+            return false;
+        }
+
+        // User must not already have a pass
+        $existing_pass = $this->findPass($uid);
+        if ($existing_pass) {
             return false;
         }
 
