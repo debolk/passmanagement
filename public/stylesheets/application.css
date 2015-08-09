@@ -47,3 +47,12 @@ label {
     display: inline-block;
     width: 15em;
 }
+
+/* Positive and negative form messages */
+.wrong {
+    color: #f33;
+}
+
+.okay {
+    color: #393;
+}

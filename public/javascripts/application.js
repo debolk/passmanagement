@@ -192,19 +192,22 @@ $(document).ready(function(){
                 // Enable button for recheck
                 button.prop('disabled', false);
 
+                // Hide previous answer colouring
+                result.removeClass('wrong okay');
+
                 // Update response text
                 if (answer.check == 'door_response_not_okay') {
-                    result.html('Kan de deur niet bereiken');
+                    result.html('Kan de deur niet bereiken').addClass('wrong');
 
                 }
                 else if (answer.check == 'pass_mismatch') {
-                    result.html('Laatste twee passen niet hetzelfde');
+                    result.html('Laatste twee passen niet hetzelfde').addClass('wrong');
                 }
                 else if (answer.check == 'entries_too_old') {
-                    result.html('Pas meer dan 10 minuten geleden gescand');
+                    result.html('Pas meer dan 10 minuten geleden gescand').addClass('wrong');
                 }
                 else if (answer.check == 'pass_okay') {
-                    result.html('Pas is correct');
+                    result.html('Pas is correct').addClass('okay');
                     $('#submit').prop('disabled', false);
                 }
             },
