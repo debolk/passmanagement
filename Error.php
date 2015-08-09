@@ -42,7 +42,7 @@ class Error
             'code'    => $error_code,
             'title'   => $title,
             'details' => $details,
-            'href'    => $this->config['base_url'] . 'docs.html#'.$error_code
+            'href'    => $this->config['base_url'] . 'docs#errors_'.$error_code
         ]);
         exit;
     }

@@ -147,31 +147,31 @@
         <tbody>
             <tr>
                 <td>403 Unauthorized</td>
-                <td><a name="#errors_oauth_token_missing">oauth_token_missing</a></td>
+                <td><a name="errors_oauth_token_missing">oauth_token_missing</a></td>
                 <td>You have not sent an OAuth access token as a GET parameter: /endpoint/access_token=XYZ</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>403 Forbidden</td>
-                <td><a name="#errors_oauth_token_invalid">oauth_token_invalid</a></td>
+                <td><a name="errors_oauth_token_invalid">oauth_token_invalid</a></td>
                 <td>You have sent an oauth token, but it was not acceptable. There are three possible reasons: a) the acces token is invalid, b) the access token has expired, c) the user does not have board-level permissions.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>502 Bad Gateway</td>
-                <td><a name="#errors_ldap_unavailable">ldap_unavailable</a></td>
+                <td><a name="errors_ldap_unavailable">ldap_unavailable</a></td>
                 <td>The LDAP server is unreachable. This is a temporary condition, or the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>502 Bad Gateway</td>
-                <td><a name="#errors_ldap_login_failure">ldap_login_failure</a></td>
+                <td><a name="errors_ldap_login_failure">ldap_login_failure</a></td>
                 <td>The LDAP server is available, but the credentials are wrong. This is not a temporary condition: the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">All endpoints</td>
             </tr>
             <tr>
                 <td>500 Internal Server Error</td>
-                <td><a name="#errors_internal_error">internal_error</a></td>
+                <td><a name="errors_internal_error">internal_error</a></td>
                 <td>The system could not complete the requested action. A more specific error message is unavailable. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">
                     POST /users/:uid <br>
@@ -181,7 +181,7 @@
             </tr>
             <tr>
                 <td>502 Bad Gateway</td>
-                <td><a name="#errors_door_response_not_okay">door_response_not_okay</a></td>
+                <td><a name="errors_door_response_not_okay">door_response_not_okay</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the door could not be reached to check the pass number. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -189,7 +189,7 @@
             </tr>
             <tr>
                 <td>403 Unauthorized</td>
-                <td><a name="#errors_pass_mismatch">pass_mismatch</a></td>
+                <td><a name="errors_pass_mismatch">pass_mismatch</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes scanned at the door are not identical. Rescan the pass twice.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -197,7 +197,7 @@
             </tr>
             <tr>
                 <td>403 Unauthorized</td>
-                <td><a name="#errors_entries_too_old">entries_too_old</a></td>
+                <td><a name="errors_entries_too_old">entries_too_old</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes were scanned more than 10 minutes ago. Rescan the pass twice.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -205,7 +205,7 @@
             </tr>
             <tr>
                 <td>404 Not Found</td>
-                <td><a name="#errors_user_not_found">user_not_found</a></td>
+                <td><a name="errors_user_not_found">user_not_found</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user does not exist.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
@@ -213,7 +213,7 @@
             </tr>
             <tr>
                 <td>409 Conflict</td>
-                <td><a name="#errors_user_has_pass">user_has_pass</a></td>
+                <td><a name="errors_user_has_pass">user_has_pass</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user already has a pass. Remove the existing pass first before adding a new pass.</td>
                 <td class="single-word">
                     POST /users/:uid/pass
