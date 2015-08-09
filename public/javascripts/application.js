@@ -254,6 +254,9 @@ $(document).ready(function(){
 
                 // Clear pass check form interface
                 $('#pass_result').html('');
+
+                // Show notification
+                showNotification('success', 'Pas toevoegd', 'Nieuwe pas toevoegd.');
             },
             error: showError
         });
