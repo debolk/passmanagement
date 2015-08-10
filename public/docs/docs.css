@@ -1,5 +1,7 @@
 body {
     font-family: Garamond, sans-serif;
+}
+p {
     max-width: 60em;
 }
 
@@ -8,10 +10,6 @@ code {
     margin: 1em 0;
     font-size: large;
     font-family: Courier, monospace;
-}
-
-img {
-    width: 45em;
 }
 
 table {

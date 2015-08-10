@@ -15,8 +15,17 @@
     <nav>
         <ol>
             <li><a href="#auth" title="Authentication &amp; authorisation">Authentication &amp; authorisation</a></li>
-            <li><a href="#apireference" title="API reference">API reference</a></li>
-            <li><a href="#responses" title="Responses">Responses</a></li>
+            <li>
+                <a href="#apireference" title="API reference">API reference</a>
+                <ol>
+                    <li><a href="#api_get_users">GET /users</a></li>
+                    <li><a href="#api_post_users_uid">POST /users/:uid</a></li>
+                    <li><a href="#api_delete_users_uid">DELETE /users/:uid</a></li>
+                    <li><a href="#api_post_users_uid_pass">POST /users/:uid/pass</a></li>
+                    <li><a href="#api_delete_users_uid_pass">DELETE /users/:uid/pass</a></li>
+                    <li><a href="#api_get_deur_checkpass">GET /deur/checkpass</a></li>
+                </ol>
+            </li>
             <li><a href="#errors" title="Errors">Errors</a></li>
         </ol>
     </nav>
@@ -36,80 +45,320 @@
     <p>
         The API supports the following endpoints. All endpoints accept and return only JSON-encoded data. Note that all endpoints must be called with a valid OAuth2 access token (see <a href="#auth" title="authentication">authentication</a>). The listed responses and HTTP response codes are only sent when a request is succesful. If a fatal error occurs, an <a href="#errors" title="error response">error response</a> is sent instead.
     </p>
+
+    <a name="api_get_users"><h3>GET /users</h3></a>
     <table>
-        <thead><tr>
-            <th>Method</th>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>GET</td>
+        </tr>
+        <tr>
             <th>URL</th>
+            <td colspan=3>/users</td>
+        </tr>
+        <tr>
             <th>Purpose</th>
-            <th class="single-word">HTTP response code</th>
-            <th class="single-word">Response (<a href="#responses" title="details">details</a>)</th>
-        </tr></thead>
-        <tbody>
-            <tr>
-                <td>GET</td>
-                <td>/users</td>
-                <td>List of all users with pass data</td>
-                <td>200 Okay</td>
-                <td><code>[{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}, ...]</code></td>
-            </tr>
-            <tr>
-                <td>POST</td>
-                <td>/users/:uid</td>
-                <td>Grant this user (identified by :uid) access to the door</td>
-                <td>204 No Content</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td>DELETE</td>
-                <td>/users/:uid</td>
-                <td>Deny this user (identified by :uid) access to the door</td>
-                <td>204 No Content</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td>POST</td>
-                <td>/users/:uid/pass</td>
-                <td>Add the last pass that was scanned at the door and failed to this user, pending some validations. Returns the details of the user after adding the pass.</td>
-                <td>200 Okay</td>
-                <td><code>{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}</code></td>
-            </tr>
-            <tr>
-                <td>DELETE</td>
-                <td>/users/:uid/pass</td>
-                <td>Remove the pass of a user (identified by :uid)</td>
-                <td>204 No Content</td>
-                <td>&nbsp;</td>
-            </tr>
-            <tr>
-                <td>GET</td>
-                <td>/deur/checkpass</td>
-                <td>Check whether the last pass that was scanned at the door and failed, meets the requirements to be added to the system</td>
-                <td>200 Okay</td>
-                <td><code>{"check": "pass_okay"}</code></td>
-            </tr>
-        </tbody>
+            <td colspan=3>List of all users with pass information</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <td colspan=3>None</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>200 OK</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3><code>[{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}, ...]</code></td>
+        </tr>
+        <tr>
+            <th rowspan=4>Response fields</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>name</th>
+            <td>string</td>
+            <td>full name (first and last name) of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>pass</th>
+            <td>boolean</td>
+            <td>whether the Bolkaccount has a pass set</td>
+        </tr>
+        <tr>
+            <th>access</th>
+            <td>boolean</td>
+            <td>whether the Bolkaccount is allowed entry through the system</td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+            </td>
+        </tr>
     </table>
 
-    <a name="responses"><h2>Responses</h2></a>
-    <p>
-        A basic response object about a user has four properties: uid (string), name (string), pass (boolean) and access (boolean). The uid is the username of the Bolkaccount of this user. The name field contains the full name (first and last name) of the user. Note that users are not sorted by their name. The pass field is true if the user has a valid pass in the system, false otherwise. The access field is only true if the user is allowed to use the door, false otherwise. A user must have both these fields to be true to be able to enter the soos using the system.
-    </p>
-    <p>
-        The /deur/checkpass call returns the status of the last pass which failed to gain access to the system. There are four possible responses which are sent with a HTTP 200 Okay response. Only if the response is "pass_okay" can the pass be added to a user. These responses are:
-        <dl>
-            <dt>pass_okay</dt>
-            <dd>The last pass has scanned succesfully and can be added to a user</dd>
+    <a name="api_post_users_uid"><h3>POST /users/:uid</h3></a>
+    <table>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>POST</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td colspan=3>/users/:uid</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan=3>Grant this Bolkaccount access to the door</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>the username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>204 No Content</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3>&nbsp;</td>
+        </tr>
+        <tr>
+            <th rowspan=1>Response fields</th>
+            <td colspan=3>None</td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+                <a href="#errors_internal_error">500 internal_error</a> <br>
+            </td>
+        </tr>
+    </table>
 
-            <dt>door_response_not_okay</dt>
-            <dd>The door cannot be reached</dd>
+    <a name="api_delete_users_uid"><h3>DELETE /users/:uid</h3></a>
+    <table>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>DELETE</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td colspan=3>/users/:uid</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan=3>Deny this Bolkaccount access to the door</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>the username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>204 No Content</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3>&nbsp;</td>
+        </tr>
+        <tr>
+            <th rowspan=1>Response fields</th>
+            <td colspan=3>None</td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+                <a href="#errors_internal_error">500 internal_error</a> <br>
+            </td>
+        </tr>
+    </table>
 
-            <dt>pass_mismatch</dt>
-            <dd>The last two passes that were scanned at the door are not identical</dd>
+    <a name="api_post_users_uid_pass"><h3>POST /users/:uid/pass</h3></a>
+    <table>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>POST</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td colspan=3>/users/:uid/pass</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan=3>Add the last pass that was scanned at the door and failed to this Bolkaccount, pending some validations. Returns the details of the Bolkaccount after adding the pass.</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>the username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>200 OK</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3><code>{"uid": "peter", "name": "Peter Dummy", "pass": true, "access": false}</code></td>
+        </tr>
+        <tr>
+            <th rowspan=4>Response fields</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>name</th>
+            <td>string</td>
+            <td>full name (first and last name) of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>pass</th>
+            <td>boolean</td>
+            <td>whether the Bolkaccount has a pass set</td>
+        </tr>
+        <tr>
+            <th>access</th>
+            <td>boolean</td>
+            <td>whether the Bolkaccount is allowed entry through the system</td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+                <a href="#errors_door_response_not_okay">502 door_response_not_okay</a> <br>
+                <a href="#errors_pass_mismatch">403 pass_mismatch</a> <br>
+                <a href="#errors_entries_too_old">403 entries_too_old</a> <br>
+                <a href="#errors_user_not_found">404 user_not_found</a> <br>
+                <a href="#errors_user_has_pass">409 user_has_pass</a> <br>
+                <a href="#errors_pass_exists">409 pass_exists</a> <br>
+            </td>
+        </tr>
+    </table>
 
-            <dt>entries_too_old</dt>
-            <dd>The last pass was scanned more than 10 minutes ago</dd>
-        </dl>
-    </p>
+    <a name="api_delete_users_uid_pass"><h3>DELETE /users/:uid/pass</h3></a>
+    <table>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>DELETE</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td colspan=3>/users/:uid/pass</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan=3>Remove the pass of a Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <th>uid</th>
+            <td>string</td>
+            <td>the username of the Bolkaccount</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>204 No Content</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3></td>
+        </tr>
+        <tr>
+            <th rowspan=1>Response fields</th>
+            <td colspan=3>None</td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+                <a href="#errors_internal_error">500 internal_error</a> <br>
+            </td>
+        </tr>
+    </table>
+
+    <a name="api_get_deur_checkpass"><h3>GET /deur/checkpass</h3></a>
+    <table>
+        <tr>
+            <th>Methods</th>
+            <td colspan=3>GET</td>
+        </tr>
+        <tr>
+            <th>URL</th>
+            <td colspan=3>/deur/checkpass</td>
+        </tr>
+        <tr>
+            <th>Purpose</th>
+            <td colspan=3>Check whether the last pass that was scanned at the door and failed, meets the requirements to be added to the system</td>
+        </tr>
+        <tr>
+            <th>Request parameters</th>
+            <td colspan=3>None</td>
+        </tr>
+        <tr>
+            <th>Successful HTTP status</th>
+            <td colspan=3>200 OK</td>
+        </tr>
+        <tr>
+            <th>Successful response</th>
+            <td colspan=3><code>{"check": "pass_okay"}</code></td>
+        </tr>
+        <tr>
+            <th rowspan=1>Response fields</th>
+            <th>check</th>
+            <td>string</td>
+            <td>
+                There are four possible values:
+                <dl>
+                    <dt>pass_okay</dt>
+                    <dd>The last pass has scanned succesfully and can be added to a user</dd>
+
+                    <dt>door_response_not_okay</dt>
+                    <dd>The door cannot be reached</dd>
+
+                    <dt>pass_mismatch</dt>
+                    <dd>The last two passes that were scanned at the door are not identical</dd>
+
+                    <dt>entries_too_old</dt>
+                    <dd>The last pass was scanned more than 10 minutes ago</dd>
+                </dl>
+            </td>
+        </tr>
+        <tr>
+            <th>Possible errors</th>
+            <td colspan=3>
+                <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
+                <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
+                <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
+                <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
+            </td>
+        </tr>
+    </table>
 
     <a name="errors"><h2>Errors</h2></a>
     <p>
@@ -174,17 +423,17 @@
                 <td><a name="errors_internal_error">internal_error</a></td>
                 <td>The system could not complete the requested action. A more specific error message is unavailable. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">
-                    POST /users/:uid <br>
-                    DELETE /users/:uid <br>
-                    DELETE /users/:uid/pass
+                    <a href="#api_post_users_uid">POST /users/:uid</a> <br>
+                    <a href="#api_delete_users_uid">DELETE /users/:uid</a> <br>
+                    <a href="#api_delete_users_uid_pass">DELETE /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
-                <td>502 Bad Gateway</td>
+                <td>500 Bad Gateway</td>
                 <td><a name="errors_door_response_not_okay">door_response_not_okay</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the door could not be reached to check the pass number. This is not a client error: contact the ICTcom.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
@@ -192,7 +441,7 @@
                 <td><a name="errors_pass_mismatch">pass_mismatch</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes scanned at the door are not identical. Rescan the pass twice.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
@@ -200,7 +449,7 @@
                 <td><a name="errors_entries_too_old">entries_too_old</a></td>
                 <td>You tried to add the last-scanned pass to a user, but the request cannot be completed. The last two passes were scanned more than 10 minutes ago. Rescan the pass twice.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
@@ -208,7 +457,7 @@
                 <td><a name="errors_user_not_found">user_not_found</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user does not exist.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
@@ -216,7 +465,7 @@
                 <td><a name="errors_user_has_pass">user_has_pass</a></td>
                 <td>You tried to a the last-scanned pass to a user, but the user already has a pass. Remove the existing pass first before adding a new pass.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>
@@ -224,7 +473,7 @@
                 <td><a name="errors_pass_exists">pass_exists</a></td>
                 <td>You tried to add the last-scanned pass to a user, but this pass is already in system. It has been registered by another user. Remove the existing registration first before adding this pass to a new user.</td>
                 <td class="single-word">
-                    POST /users/:uid/pass
+                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
         </tbody>
