@@ -88,13 +88,13 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
 
     // Send answer based on result
     if ($pass === LDAP::ERROR_USER_NOT_FOUND) {
-        $error->send(404, 'user_not_found', 'The user cannot be found', 'This user does not exist or has been removed.');
+        $error->send(404, $pass, 'The user cannot be found', 'This user does not exist or has been removed.');
     }
     elseif ($pass === LDAP::ERROR_DOUBLE_PASS) {
-        $error->send(409, 'user_has_pass', 'The user already has a pass', 'This user already has a pass set. A second one cannot be added.');
+        $error->send(409, $pass, 'The user already has a pass', 'This user already has a pass set. A second one cannot be added.');
     }
     elseif ($pass === LDAP::ERROR_PASS_EXISTS) {
-        $error->send(409, 'pass_exists', 'This pass is in use', 'Another user has registered this pass. It cannot be added again.');
+        $error->send(409, $pass, 'This pass is in use', 'Another user has registered this pass. It cannot be added again.');
     }
     else {
         // Return the new entry of the user
