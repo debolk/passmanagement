@@ -35,7 +35,7 @@ if (!$ldap->connect()) {
     $error->send(502, 'ldap_unavailable', 'LDAP server not responding', 'The API cannot connect to the LDAP server');
 }
 if (! $ldap->login()) {
-    $error->send(502, 'ldap_login_failure', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
+    $error->send(500, 'ldap_login_failure', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
 }
 
 /*
