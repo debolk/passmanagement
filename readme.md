@@ -4,7 +4,7 @@ A simple user interface to manage NFC-cards in LDAP.
 ## Requirements
 
 ## Installation
-1. Install dependencies: `sudo apt-get install php5-fpm php5-ldap nginx git`.
+1. Install dependencies: `sudo apt-get install php5-fpm php5-ldap php5-curl nginx git`.
 1. Create a folder for the project: `mkdir /srv/passmanagement`.
 1. Clone the project in that directory: `git clone https://github.com/jakobbuis/passmanagement.git /srv/passmanagement`.
 1. Make sure nginx can access the files: `sudo chown -R jakob:www-data /srv/`.
