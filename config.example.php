@@ -16,5 +16,13 @@ $config = [
     ],
     'deursoos' => [
         'failures' => ''
+    ],
+    'database' => [
+        'database_type' => 'mysql',
+        'charset'       => 'utf8'
+        'server'        => 'localhost',
+        'username'      => '',
+        'password'      => '',
+        'database_name' => '',
     ]
 ];

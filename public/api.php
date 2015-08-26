@@ -12,12 +12,14 @@ require '../LDAP.php';
 require '../OAuth.php';
 require '../Deursoos.php';
 require '../Error.php';
+require '../Database.php';
 
 // Start classes we need to work
-$error = new Error($config['application']);
-$oauth = new OAuth($config['oauth']);
-$ldap  = new LDAP($config['ldap']);
-$deur  = new Deursoos($config['deursoos']);
+$error    = new Error($config['application']);
+$oauth    = new OAuth($config['oauth']);
+$ldap     = new LDAP($config['ldap']);
+$deur     = new Deursoos($config['deursoos']);
+$database = new Database($config['database']);
 
 // All responses of this API are valid JSON
 header('Content-Type: application/json');
@@ -120,11 +122,18 @@ $app->get('/deur/checkpass', function() use ($app, $ldap, $deur, $error) {
 });
 
 // Check whether a specific pass can gain entry
-$app->get('/deur/access/:pass', function($pass) use ($app, $ldap, $error) {
+$app->get('/deur/access/:pass', function($cardID) use ($app, $ldap, $error, $database) {
 
-    if ($ldap->canAccess($pass)) {
+    // Find card information in LDAP
+    $info = $ldap->infoOnPassAttempt($cardID);
+
+    // Log attempt
+    $database->logAttempt($cardID, $info['access'], $info['username'], $info['reason']);
+
+    // Send appropriate response
+    if ($info['access'] === true) {
+        // No answer is needed
         $app->response->setStatus(204); // HTTP 204 No Content
-        return;
     }
     else {
         $error->send(403, 'access_denied', 'Access denied', 'This pass may not open the door at this time.');

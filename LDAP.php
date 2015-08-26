@@ -218,18 +218,35 @@ class LDAP
     }
 
     /**
-     * Determine whether a pass may open the door
-     * @param  string $passNumber the full pass number
-     * @return boolean            true if opening, false if not
+     * Return basic information on a pass attempt to open the door
+     * @param  string $passNumber the full card ID
+     * @return array              containing three members:
+     *                                access (boolean)  true if the door should open, false otherwise
+     *                                username (string) if known, the username of owner of the pass, null otherwise
+     *                                reason (string)   if known, the reason for acceptance or denial, null otherwise
      */
-    public function canAccess($passNumber)
+    public function infoOnPassAttempt($passNumber)
     {
+        $info = ['access' => false, 'username' => null, 'reason' => null];
+
+        // Deny access if we can't find the pass or its owner
         $user = $this->findUserByPass($passNumber);
         if (! $user) {
-            return false;
+            $info['access'] = false;
+            $info['reason'] = 'pass_unknown';
+            return $info;
         }
 
-        return (in_array('gosaIntranetAccount', $user['objectclass']));
+        // Grant access if the user has the right flag set
+        if (in_array('gosaIntranetAccount', $user['objectclass'])) {
+            $info['access'] = true;
+            return $info;
+        }
+        else {
+            $info['access'] = false;
+            $info['reason'] = 'user_not_authorised';
+            return $info;
+        }
     }
 
     /**
