@@ -27,7 +27,7 @@ if (! isset($_GET['access_token'])) {
     $error->send(401, 'oauth_token_missing', 'Missing OAuth token', 'Client must supply a valid OAuth2 access token with board-level permissions');
 }
 if (! $oauth->validToken($_SERVER['REQUEST_URI'], $_GET['access_token'])) {
-    $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not sufficient access privileges');
+    $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have sufficient access privileges');
 }
 
 // Setup the LDAP connection
@@ -124,6 +124,7 @@ $app->get('/deur/access/:pass', function($pass) use ($app, $ldap, $error) {
 
     if ($ldap->canAccess($pass)) {
         $app->response->setStatus(204); // HTTP 204 No Content
+        return;
     }
     else {
         $error->send(403, 'access_denied', 'Access denied', 'This pass may not open the door at this time.');
