@@ -26,8 +26,8 @@ header('Content-Type: application/json');
 if (! isset($_GET['access_token'])) {
     $error->send(401, 'oauth_token_missing', 'Missing OAuth token', 'Client must supply a valid OAuth2 access token with board-level permissions');
 }
-if (! $oauth->validToken($_GET['access_token'])) {
-    $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have board-level permissions');
+if (! $oauth->validToken($_SERVER['REQUEST_URI'], $_GET['access_token'])) {
+    $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not sufficient access privileges');
 }
 
 // Setup the LDAP connection
@@ -117,6 +117,17 @@ $app->delete('/users/:uid/pass', function($uid) use ($app, $ldap, $error) {
 // Check the last scanned pass was valid
 $app->get('/deur/checkpass', function() use ($app, $ldap, $deur, $error) {
     echo json_encode(['check' => $deur->validatePassAttempt()]);
+});
+
+// Check whether a specific pass can gain entry
+$app->get('/deur/access/:pass', function($pass) use ($app, $ldap, $error) {
+
+    if ($ldap->canAccess($pass)) {
+        $app->response->setStatus(204); // HTTP 204 No Content
+    }
+    else {
+        $error->send(403, 'access_denied', 'Access denied', 'This pass may not open the door at this time.');
+    }
 });
 
 // Run the application

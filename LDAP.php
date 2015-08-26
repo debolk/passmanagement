@@ -218,6 +218,21 @@ class LDAP
     }
 
     /**
+     * Determine whether a pass may open the door
+     * @param  string $passNumber the full pass number
+     * @return boolean            true if opening, false if not
+     */
+    public function canAccess($passNumber)
+    {
+        $user = $this->findUserByPass($passNumber);
+        if (! $user) {
+            return false;
+        }
+
+        return (in_array('gosaIntranetAccount', $user['objectclass']));
+    }
+
+    /**
      * Find a LDAP user by its uid
      * @param  string    $uid the user id to find
      * @return array          details of the user, or null if it doesn't exist
@@ -249,6 +264,29 @@ class LDAP
         }
 
         return ldap_get_entries($this->ldap, $pass)[0];
+    }
+
+    /**
+     * Find a user by its pass
+     * @param  string $passNumber full pass number
+     * @return array              details of the user
+     */
+    private function findUserByPass($passNumber)
+    {
+        // Find the card
+        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=device)(cn=ovchipkaart)(serialNumber=$passNumber))");
+        if (ldap_count_entries($this->ldap, $search) !== 1) {
+            return null;
+        }
+        $card = ldap_get_entries($this->ldap, $search)[0];
+
+        // Construct DN of the owner of the card
+        $owner_dn = str_replace('cn=ovchipkaart,', '', $card['dn']);
+
+        $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn']);
+        $owner = ldap_get_entries($this->ldap, $owner_ldap);
+
+        return $owner[0];
     }
 
     /**
