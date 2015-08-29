@@ -73,10 +73,10 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $database, $erro
 
     // Check the scanned pass, returning errors when not acceptable
     $scan = $database->validatePassAttempt();
-    if ($scan === Deursoos::ERROR_ENTRIES_TOO_OLD) {
+    if ($scan === Database::ERROR_ENTRIES_TOO_OLD) {
         $error->send(403, $scan, 'Pass scan has expired', 'The last pass was scanned more than 10 minutes ago.');
     }
-    elseif ($scan === Deursoos::ERROR_PASS_MISMATCH) {
+    elseif ($scan === Database::ERROR_PASS_MISMATCH) {
         $error->send(403, $scan, 'Last two passes are not identical', 'The last two passes that were scanned are not the same pass.');
     }
 
