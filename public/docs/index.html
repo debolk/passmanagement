@@ -249,7 +249,6 @@
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
                 <a href="#errors_ldap_login_failure">500 ldap_login_failure</a> <br>
-                <a href="#errors_door_response_not_okay">502 door_response_not_okay</a> <br>
                 <a href="#errors_pass_mismatch">403 pass_mismatch</a> <br>
                 <a href="#errors_entries_too_old">403 entries_too_old</a> <br>
                 <a href="#errors_user_not_found">404 user_not_found</a> <br>
@@ -334,13 +333,10 @@
             <th>check</th>
             <td>string</td>
             <td>
-                There are four possible values:
+                There are three possible values:
                 <dl>
                     <dt>pass_okay</dt>
                     <dd>The last pass has scanned succesfully and can be added to a user</dd>
-
-                    <dt>door_response_not_okay</dt>
-                    <dd>The door cannot be reached</dd>
 
                     <dt>pass_mismatch</dt>
                     <dd>The last two passes that were scanned at the door are not identical</dd>
@@ -471,14 +467,6 @@
                     <a href="#api_post_users_uid">POST /users/:uid</a> <br>
                     <a href="#api_delete_users_uid">DELETE /users/:uid</a> <br>
                     <a href="#api_delete_users_uid_pass">DELETE /users/:uid/pass</a>
-                </td>
-            </tr>
-            <tr>
-                <td>500 Bad Gateway</td>
-                <td><a name="errors_door_response_not_okay">door_response_not_okay</a></td>
-                <td>You tried to add the last-scanned pass to a user, but the door could not be reached to check the pass number. This is not a client error: contact the ICTcom.</td>
-                <td class="single-word">
-                    <a href="#api_post_users_uid_pass">POST /users/:uid/pass</a>
                 </td>
             </tr>
             <tr>

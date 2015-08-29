@@ -10,7 +10,6 @@ require '../vendor/autoload.php';
 require '../config.php';
 require '../LDAP.php';
 require '../OAuth.php';
-require '../Deursoos.php';
 require '../Error.php';
 require '../Database.php';
 
@@ -18,7 +17,6 @@ require '../Database.php';
 $error    = new Error($config['application']);
 $oauth    = new OAuth($config['oauth']);
 $ldap     = new LDAP($config['ldap']);
-$deur     = new Deursoos($config['deursoos']);
 $database = new Database($config['database']);
 
 // All responses of this API are valid JSON
@@ -71,14 +69,11 @@ $app->delete('/users/:uid', function($uid) use ($app, $ldap, $error) {
 });
 
 // Add a pass to a user
-$app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
+$app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $database, $error) {
 
     // Check the scanned pass, returning errors when not acceptable
-    $scan = $deur->validatePassAttempt();
-    if ($scan === Deursoos::ERROR_DOOR_RESPONSE_NOT_OKAY) {
-        $error->send(502, $scan, 'Cannot connect to door', 'The door is unreachable. Last scanned pass could not be retrieved.');
-    }
-    elseif ($scan === Deursoos::ERROR_ENTRIES_TOO_OLD) {
+    $scan = $database->validatePassAttempt();
+    if ($scan === Deursoos::ERROR_ENTRIES_TOO_OLD) {
         $error->send(403, $scan, 'Pass scan has expired', 'The last pass was scanned more than 10 minutes ago.');
     }
     elseif ($scan === Deursoos::ERROR_PASS_MISMATCH) {
@@ -86,7 +81,7 @@ $app->post('/users/:uid/pass', function($uid) use ($app, $ldap, $deur, $error) {
     }
 
     // Store pass on user
-    $pass = $ldap->addPass($uid, $deur->getLastRefusedPass());
+    $pass = $ldap->addPass($uid, $database->getLastRefusedPass());
 
     // Send answer based on result
     if ($pass === LDAP::ERROR_USER_NOT_FOUND) {
@@ -117,8 +112,8 @@ $app->delete('/users/:uid/pass', function($uid) use ($app, $ldap, $error) {
 });
 
 // Check the last scanned pass was valid
-$app->get('/deur/checkpass', function() use ($app, $ldap, $deur, $error) {
-    echo json_encode(['check' => $deur->validatePassAttempt()]);
+$app->get('/deur/checkpass', function() use ($app, $ldap, $database, $error) {
+    echo json_encode(['check' => $database->validatePassAttempt()]);
 });
 
 // Check whether a specific pass can gain entry
