@@ -229,9 +229,14 @@ class LDAP
     {
         $info = ['access' => false, 'username' => null, 'reason' => null];
 
-        // Deny access if we can't find the pass or its owner
+        // Find the user
         $user = $this->findUserByPass($passNumber);
-        if (! $user) {
+        if ($user) {
+            // Log username when known
+            $info['username'] = $user['uid'][0];
+        }
+        else {
+            // Deny access if we can't find the pass or its owner
             $info['access'] = false;
             $info['reason'] = 'pass_unknown';
             return $info;
