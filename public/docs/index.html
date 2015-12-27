@@ -97,6 +97,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -140,6 +141,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -184,6 +186,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -245,6 +248,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -293,6 +297,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -349,6 +354,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -392,6 +398,7 @@
         <tr>
             <th>Possible errors</th>
             <td colspan=3>
+                <a href="#errors_database_unavailable">500 database_unavailable</a> <br>
                 <a href="#errors_oauth_token_missing">403 oauth_token_missing</a> <br>
                 <a href="#errors_oauth_token_invalid">403 oauth_token_invalid</a> <br>
                 <a href="#errors_ldap_unavailable">502 ldap_unavailable</a> <br>
@@ -435,6 +442,12 @@
             <th>Endpoint</th>
         </tr></thead>
         <tbody>
+            <tr>
+                <td>500 Internal Server Error</td>
+                <td><a name="errors_database_unavailable">database_unavailable</a></td>
+                <td>The (MySQL-)database is unreachable. This is a temporary condition, or the configuration of the API is wrong. This is not a client error: contact the ICTcom.</td>
+                <td class="single-word">All endpoints</td>
+            </tr>
             <tr>
                 <td>403 Unauthorized</td>
                 <td><a name="errors_oauth_token_missing">oauth_token_missing</a></td>

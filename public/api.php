@@ -13,14 +13,19 @@ require '../OAuth.php';
 require '../Error.php';
 require '../Database.php';
 
+// All responses of this API are valid JSON
+header('Content-Type: application/json');
+
 // Start classes we need to work
 $error    = new Error($config['application']);
 $oauth    = new OAuth($config['oauth']);
 $ldap     = new LDAP($config['ldap']);
-$database = new Database($config['database']);
 
-// All responses of this API are valid JSON
-header('Content-Type: application/json');
+try {
+    $database = new Database($config['database']);
+} catch (Exception $e) {
+    $error->send(500, 'database_unavailable', 'Could not connect to database: fix configuration');
+}
 
 // Validate we have a proper access token
 if (! isset($_GET['access_token'])) {
