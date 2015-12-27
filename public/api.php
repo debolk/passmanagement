@@ -24,7 +24,7 @@ $ldap     = new LDAP($config['ldap']);
 try {
     $database = new Database($config['database']);
 } catch (Exception $e) {
-    $error->send(500, 'database_unavailable', 'Could not connect to database: fix configuration');
+    $error->send(500, 'database_unavailable', 'Cannot connect to database', 'Adapt configuration to be able to create a valid database connection');
 }
 
 // Validate we have a proper access token
