@@ -14,9 +14,6 @@ $config = [
         'authorisation_server' => '',
         'resource'             => ''
     ],
-    'deursoos' => [
-        'failures' => ''
-    ],
     'database' => [
         'database_type' => 'mysql',
         'charset'       => 'utf8'
