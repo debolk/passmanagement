@@ -62,7 +62,7 @@ $(document).ready(function(){
         $('#valid_pass').on('click', checkPass);
         $('#new_pass').on('submit', addPass);
         $('body').on('click', '.seen', hideNotifications);
-    }
+    };
 
     /**
      * Show an API error message
