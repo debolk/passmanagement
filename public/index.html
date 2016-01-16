@@ -26,6 +26,7 @@
                 <th>Naam</th>
                 <th>Heeft pas</th>
                 <th>Krijgt toegang</th>
+                <th>Laatst gebruikt</th>
             </tr>
         </thead>
         <tbody>
@@ -79,6 +80,9 @@
                 {{else}}
                     <a href="#" data-uid="{{uid}}" class="status access no">&cross; geen toegang</a>
                 {{/if}}
+            </td>
+            <td>
+                {{last_entry}}
             </td>
         </tr>
     </script>

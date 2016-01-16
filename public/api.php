@@ -49,8 +49,18 @@ if (! $ldap->login()) {
 $app = new \Slim\Slim();
 
 // JSON-encoded data of all current members with passes
-$app->get('/users', function() use ($ldap) {
-    echo json_encode($ldap->getAllUsers());
+$app->get('/users', function() use ($ldap, $database) {
+    // Construct required data
+    $users = $ldap->getAllUsers();
+    $timestamps = $database->getLastEntries();
+    $data = array_map(function($user) use ($timestamps) {
+        $user['last_entry'] = isset($timestamps[$user['uid']]) ?
+                                ($timestamps[$user['uid']]) :
+                                ('Voor 1 september 2015 (of nooit)');
+        return $user;
+    }, $users);
+
+    echo json_encode($data);
 });
 
 // Grant a user access to the door

@@ -95,4 +95,52 @@ class Database
 
         return $query[0]['card_id'];
     }
+
+    /**
+     * Return an associative array of [username] => [timestamp]
+     * which contains the last timestamp on which a specific username
+     * successfully opened the door
+     *
+     * @return array
+     */
+    public function getLastEntries()
+    {
+        // Query for usernames and last timestamps of access
+        $query = $this->medoo->query(
+            'SELECT `username`, MAX(`timestamp`) AS last_entry
+            FROM `attempts`
+            WHERE `username` IS NOT NULL
+            AND `access_granted` = 1
+            GROUP BY `username`'
+        )->fetchAll();
+
+        // Construct associative array
+        $output = [];
+        $tz = new DateTimeZone('Europe/Amsterdam');
+        $one_week_ago = new DateTime('-1 week', $tz);
+        $one_month_ago = new DateTime('-1 month', $tz);
+
+        foreach ($query as $row) {
+            // Convert to human diff (1 month ago, 1 week ago, etc..)
+            $entry = new DateTime($row['last_entry'], $tz);
+            $result = '';
+
+            if (!$entry) {
+                $result = 'Voor 1 september 2015 (of nooit)';
+            }
+            elseif ($entry < $one_month_ago) {
+                $result = 'Meer dan een maand geleden';
+            }
+            elseif ($entry < $one_week_ago) {
+                $result = 'Meer dan een week geleden';
+            }
+            else {
+                $result = 'Minder dan een week geleden';
+            }
+
+            $output[$row['username']] = $result;
+        }
+
+        return $output;
+    }
 }
