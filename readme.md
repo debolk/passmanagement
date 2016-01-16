@@ -2,6 +2,7 @@
 A simple user interface to manage NFC-cards in LDAP.
 
 ## Requirements
+Requires PHP 5.5+, MySQL, php5-ldap, php5-curl and php5-mysql.
 
 ## Installation
 1. Install dependencies: `sudo apt-get install php5-fpm php5-ldap php5-curl nginx git`.
