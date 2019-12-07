@@ -40,13 +40,17 @@ $(document).ready(function(){
 
         // Load members for form
         $.ajax({
-            url: 'https://people.debolk.nl/members/list?access_token='+window.access_token,
+            url: 'https://people.i.bolkhuis.nl/members?access_token='+window.access_token,
             type: 'GET',
             dataType: 'json',
             success: function(members) {
                 // Sort by name
                 members.sort(function(a,b){
                     return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+                });
+                // filter out everyone without a valid email address
+                members = members.filter((member) => {
+                    return member.email !== "unknown@nieuwedelft.nl.invalid"
                 });
                 // Add to select
                 $(members).each(function(){
