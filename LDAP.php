@@ -11,7 +11,7 @@ class LDAP
      * LDAP connection
      * @var resource
      */
-    private $ldap;
+    private LDAP\Connection $ldap;
 
     /**
      * Configuration object
@@ -51,6 +51,7 @@ class LDAP
      */
     public function login()
     {
+        @ldap_set_option($this->ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         return @ldap_bind($this->ldap, $this->config['username'], $this->config['password']);
     }
 
@@ -88,7 +89,7 @@ class LDAP
                 'uid'    => $owner[0]['uid'][0],
                 'name'   => $owner[0]['cn'][0],
                 'pass'   => true,
-                'access' => in_array('gosaIntranetAccount', $owner[0]['objectclass'])
+                'access' => in_array('fdBolkData', $owner[0]['objectclass'])
             ];
         }, $cards);
     }
@@ -114,7 +115,7 @@ class LDAP
             'uid'    => $user['uid'][0],
             'name'   => $user['cn'][0],
             'pass'   => true,
-            'access' => in_array('gosaIntranetAccount', $user['objectclass'])
+            'access' => in_array('fdBolkData', $user['objectclass'])
         ];
     }
 
@@ -132,12 +133,12 @@ class LDAP
         }
 
         // Determine if we need to update
-        if (in_array('gosaIntranetAccount', $user['objectclass'])) {
+        if (in_array('fdBolkData', $user['objectclass'])) {
             return;
         }
 
         // Add flag to user
-        $patch = ['objectclass' => ['gosaIntranetAccount']];
+        $patch = ['objectclass' => ['fdBolkData']];
         ldap_mod_add($this->ldap, $user['dn'], $patch);
         return true;
     }
@@ -156,12 +157,12 @@ class LDAP
         }
 
         // Determine if we need to update
-        if (! in_array('gosaIntranetAccount', $user['objectclass'])) {
+        if (! in_array('fdBolkData', $user['objectclass'])) {
             return;
         }
 
         // Remove flag from user
-        $patch = ['objectclass' => ['gosaIntranetAccount']];
+        $patch = ['objectclass' => ['fdBolkData']];
         ldap_mod_del($this->ldap, $user['dn'], $patch);
         return true;
     }
@@ -243,7 +244,7 @@ class LDAP
         }
 
         // Grant access if the user has the right flag set
-        if (in_array('gosaIntranetAccount', $user['objectclass'])) {
+        if (in_array('fdBolkData', $user['objectclass'])) {
             $info['access'] = true;
             return $info;
         }
@@ -261,7 +262,7 @@ class LDAP
      */
     private function findUser($uid)
     {
-        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['gosaIntranetAccount']);
+        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['fdBolkData']);
         if (ldap_count_entries($this->ldap, $search) !== 1) {
             return null;
         }

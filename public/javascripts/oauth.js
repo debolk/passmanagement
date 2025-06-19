@@ -36,7 +36,7 @@ var OAuth = (function(options){
                 else {
                     // Not authenticated, must login
                     window.location = options.url
-                                        + 'authenticate?response_type=code'
+                                        + 'authorize?response_type=code'
                                         + '&client_id=' + options.client
                                         + '&client_pass=' + options.secret
                                         + '&redirect_uri=' +options.callback
