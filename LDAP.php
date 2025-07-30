@@ -81,9 +81,9 @@ class LDAP
             $owner_dn = str_replace('cn=ovchipkaart,', '', $card['dn']);
 
             // Get the owner details
-            $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn']);
+            $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'fdDoorAccess', 'cn']);
             $owner = ldap_get_entries($this->ldap, $owner_ldap);
-
+            syslog(LOG_DEBUG, var_dump($owner));
             // Construct result
             return [
                 'uid'    => $owner[0]['uid'][0],

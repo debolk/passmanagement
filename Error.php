@@ -4,7 +4,7 @@
  * The Error-class outputs fully-formatted JSON-objects that
  * have all the necessary data for processing errors on the client.
  */
-class Error
+class JSONError
 {
     /**
      * Configuration objecy

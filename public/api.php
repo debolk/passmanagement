@@ -17,15 +17,20 @@ require '../Database.php';
 header('Content-Type: application/json');
 
 // Start classes we need to work
-$error    = new Error($config['application']);
+$error    = new JSONError($config['application']);
 $oauth    = new OAuth($config['oauth']);
 $ldap     = new LDAP($config['ldap']);
+
+error_reporting(E_ALL);
+syslog(LOG_DEBUG, "Connecting to database");
 
 try {
     $database = new Database($config['database']);
 } catch (Exception $e) {
     $error->send(500, 'database_unavailable', 'Cannot connect to database', 'Adapt configuration to be able to create a valid database connection');
 }
+
+syslog(LOG_DEBUG, "Validating access token");
 
 // Validate we have a proper access token
 if (! isset($_GET['access_token'])) {
@@ -35,6 +40,8 @@ if (! $oauth->validToken($_SERVER['REQUEST_URI'], $_GET['access_token'])) {
     $error->send(403, 'oauth_token_invalid', 'OAuth token invalid', 'Access token is invalid, has expired, or does not have sufficient access privileges');
 }
 
+syslog(LOG_DEBUG, "Setting up LDAP");
+
 // Setup the LDAP connection
 if (!$ldap->connect()) {
     $error->send(502, 'ldap_unavailable', 'LDAP server not responding', 'The API cannot connect to the LDAP server');
@@ -42,6 +49,8 @@ if (!$ldap->connect()) {
 if (! $ldap->login()) {
     $error->send(500, 'ldap_login_failure', 'Cannot login to LDAP server', 'The API cannot login to the LDAP server');
 }
+
+syslog(LOG_DEBUG, "Setting up API app");
 
 /*
  * API endpoint definition

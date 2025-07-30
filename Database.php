@@ -24,7 +24,7 @@ class Database
      */
     public function __construct($config)
     {
-        $this->medoo = new medoo($config);
+        $this->medoo = new \Medoo\Medoo($config);
     }
 
     /**
