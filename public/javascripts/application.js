@@ -35,7 +35,10 @@ $(document).ready(function(){
                 });
                 $('#spinner').remove();
             },
-            error: showError
+            error: function(xhr) {
+                $('#spinner').remove();
+                showError(xhr);
+            }
         });
 
         // Load members for form
@@ -74,9 +77,19 @@ $(document).ready(function(){
      * @return {undefined}
      */
     var showError = function(xhr) {
-        var error = JSON.parse(xhr.response);
-        var message = error.details + '<br><br> Meer informatie: <a href="'+error.href+'">'+error.href+'</a>';
-        showNotification('error', error.title, message);
+        console.debug(xhr);
+        let message;
+        let title;
+        
+        if (xhr.response === "") {
+            title = `${xhr.status} ${xhr.statusText}`;
+            message = "Er is iets misgegaan met de server, contacteer beheer.";
+        } else {
+            let error = JSON.parse(xhr.response);
+            title = error.title;
+            message = error.details + `<br><br> Meer informatie: <a href="${error.href}">${error.href}</a>`;
+        }
+        showNotification('error', title, message);
     };
 
     /**
@@ -87,7 +100,7 @@ $(document).ready(function(){
      * @return {undefined}
      */
     var showNotification = function(type, title, message)
-    {
+    {   
         $('body').append(templates.notification({
             type: type,
             title: title,

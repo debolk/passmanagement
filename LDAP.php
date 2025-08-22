@@ -42,7 +42,7 @@ class LDAP
     public function connect()
     {
         $this->ldap = @ldap_connect($this->config['host']);
-        return ($this->ldap != false);
+        return $this->ldap != false;
     }
 
     /**
@@ -81,15 +81,15 @@ class LDAP
             $owner_dn = str_replace('cn=ovchipkaart,', '', $card['dn']);
 
             // Get the owner details
-            $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn']);
+            $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'fddooraccess', 'cn']);
             $owner = ldap_get_entries($this->ldap, $owner_ldap);
-
+            
             // Construct result
             return [
                 'uid'    => $owner[0]['uid'][0],
                 'name'   => $owner[0]['cn'][0],
                 'pass'   => true,
-                'access' => in_array('fdBolkData', $owner[0]['objectclass'])
+                'access' => isset($owner[0]['fddooraccess']) and $owner[0]['fddooraccess'][0] == 'TRUE'
             ];
         }, $cards);
     }
@@ -115,7 +115,7 @@ class LDAP
             'uid'    => $user['uid'][0],
             'name'   => $user['cn'][0],
             'pass'   => true,
-            'access' => in_array('fdBolkData', $user['objectclass'])
+            'access' => isset($user['fddooraccess']) and $user['fddooraccess'][0] == 'TRUE'
         ];
     }
 
@@ -133,14 +133,13 @@ class LDAP
         }
 
         // Determine if we need to update
-        if (in_array('fdBolkData', $user['objectclass'])) {
-            return;
+        if (isset($user['fddooraccess']) and $user['fddooraccess'][0] == 'TRUE') {
+            return true;
         }
 
         // Add flag to user
-        $patch = ['objectclass' => ['fdBolkData']];
-        ldap_mod_add($this->ldap, $user['dn'], $patch);
-        return true;
+        $patch = ['fddooraccess' => ['TRUE']];
+        return ldap_mod_replace($this->ldap, $user['dn'], $patch);
     }
 
     /**
@@ -157,12 +156,12 @@ class LDAP
         }
 
         // Determine if we need to update
-        if (! in_array('fdBolkData', $user['objectclass'])) {
-            return;
+        if (!isset($user['fddooraccess']) or $user['fddooraccess'][0] == 'FALSE') {
+            return true;
         }
 
         // Remove flag from user
-        $patch = ['objectclass' => ['fdBolkData']];
+        $patch = ['fddooraccess' => ['TRUE']];
         ldap_mod_del($this->ldap, $user['dn'], $patch);
         return true;
     }
@@ -199,8 +198,7 @@ class LDAP
             'cn' => 'ovchipkaart',
             'serialNumber' => $passNumber
         ];
-        ldap_add($this->ldap, $dn, $entry);
-        return true;
+        return ldap_add($this->ldap, $dn, $entry);
     }
 
     /**
@@ -214,8 +212,7 @@ class LDAP
         if (!$pass) {
             return false;
         }
-        ldap_delete($this->ldap, $pass['dn']);
-        return true;
+        return ldap_delete($this->ldap, $pass['dn']);
     }
 
     /**
@@ -244,7 +241,8 @@ class LDAP
         }
 
         // Grant access if the user has the right flag set
-        if (in_array('fdBolkData', $user['objectclass'])) {
+        // syslog(LOG_DEBUG, var_export($user, true));
+        if (isset($user['fddooraccess']) and $user['fddooraccess'][0] == 'TRUE') {
             $info['access'] = true;
             return $info;
         }
@@ -262,7 +260,7 @@ class LDAP
      */
     private function findUser($uid)
     {
-        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['fdBolkData']);
+        $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=inetOrgPerson)(uid={$uid}))", ['fddooraccess']);
         if (ldap_count_entries($this->ldap, $search) !== 1) {
             return null;
         }
@@ -271,7 +269,7 @@ class LDAP
 
     /**
      * Find the pass based on a user id
-     * @param  strin $uid the user ID
+     * @param  string $uid the user ID
      * @return array      details of the pass, or null if it doesn't exist
      */
     private function findPass($uid)
@@ -306,7 +304,7 @@ class LDAP
         // Construct DN of the owner of the card
         $owner_dn = str_replace('cn=ovchipkaart,', '', $card['dn']);
 
-        $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn']);
+        $owner_ldap = ldap_read($this->ldap, $owner_dn, '(objectclass=inetOrgPerson)', ['uid', 'objectclass', 'cn', 'fddooraccess']);
         $owner = ldap_get_entries($this->ldap, $owner_ldap);
 
         return $owner[0];
@@ -320,6 +318,6 @@ class LDAP
     private function passExists($passNumber)
     {
         $search = ldap_search($this->ldap, $this->config['base_dn'], "(&(objectClass=device)(cn=ovchipkaart)(serialNumber=$passNumber))");
-        return (ldap_count_entries($this->ldap, $search) > 0);
+        return ldap_count_entries($this->ldap, $search) > 0;
     }
 }

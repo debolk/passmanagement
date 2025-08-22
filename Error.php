@@ -1,10 +1,12 @@
 <?php
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * The Error-class outputs fully-formatted JSON-objects that
  * have all the necessary data for processing errors on the client.
  */
-class Error
+class JSONError
 {
     /**
      * Configuration objecy
@@ -29,21 +31,24 @@ class Error
      * @param  string $error_code internal application error code
      * @param  string $title      descriptive title of the error message
      * @param  string $details    longer description of the cause of the error
-     * @return void
+     * @return ResponseInterface
      */
-    function send($http_code, $error_code, $title, $details)
+    function send(ResponseInterface $response, $http_code, $error_code, $title, $details)
     {
         // Log the error details
-        error_log("HTTP $http_code Code $error_code Error $title - $details");
+        syslog(LOG_ERR, "HTTP $http_code Code $error_code Error $title - $details");
 
         // Send standard error response to client
         http_response_code($http_code);
-        echo json_encode([
+        $json = json_encode([
             'code'    => $error_code,
             'title'   => $title,
             'details' => $details,
             'href'    => $this->config['base_url'] . 'docs#errors_'.$error_code
         ]);
-        exit;
+        $body = $response->getBody();
+        $body->write($json);
+        
+        return $response->withStatus($http_code)->withBody($body);
     }
 }

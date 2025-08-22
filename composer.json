@@ -12,7 +12,8 @@
 		}
     },
     "require": {
-        "slim/slim": "^4.14.0",
-        "catfan/medoo": "^2.2.0"
+        "catfan/medoo": "^2.2.0",
+        "slim/psr7": "^1.7",
+        "slim/slim": "^4.14"
     }
 }
